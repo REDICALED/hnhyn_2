@@ -27,7 +27,7 @@ export default function RootLayout({
     <div className="">
         <VerticalLineLeft />
         <VerticalLineRight />
-      {children}
+          {children}
     </div>
   </body>
 </html>

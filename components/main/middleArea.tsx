@@ -1,8 +1,12 @@
+import { useNowArea } from "@/stores/nowArea"
+
 export default function middleArea() {
+  const { nowArea, setNowArea } = useNowArea();
+  
   return (
-    <div className="h-[20vh] w-full ">
+    <div className={`${ nowArea === 'middleArea' ? '' : 'hidden'  } h-[10vh] w-full bg-[none]`}>
       <div className="flex h-full  w-full justify-center items-center ">
-        <div className="flex h-auto border-y-2 py-[5px] ">
+        <div className="flex h-auto ">
             <div className="w-1/6 relative">
               <div className="absolute top-[0] right-[0] mr-[-20px]"> B.1998 </div>
             </div>
