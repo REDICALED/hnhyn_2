@@ -23,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
 <html lang="en" className={mono.className}>
-  <body className="pb-[env(safe-area-inset-bottom)]">
+<body className="h-[100dvh] pb-[env(safe-area-inset-bottom)]">
     <div className="">
         <VerticalLineLeft />
         <VerticalLineRight />
