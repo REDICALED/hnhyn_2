@@ -19,7 +19,7 @@ export default function bottomArea() {
     ${ (beforeArea === 'middleArea' && nowArea === 'topArea') ? 'slide-top-sm' : ''}
     ${ (beforeArea === 'bottomArea' && nowArea === 'topArea') ? 'slide-top-lg' : ''}
     ${ (beforeArea === 'topArea' && nowArea === 'bottomArea') ? 'slide-bottom-lg ' : ''}
-     bg-[none] w-full border-black transition-[height] duration-500 ease-in-out z-[49]`}>
+     bg-[none] w-full border-black transition-[height] duration-500 ease-in-out z-49`}>
       <div className="h-full w-full flex justify-center items-center">COMMERCIAL</div>
     </div>
     );

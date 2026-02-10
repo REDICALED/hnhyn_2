@@ -19,7 +19,7 @@ export default function topArea() {
     ${ (beforeArea === 'middleArea' && nowArea === 'topArea') ? 'slide-top-sm' : ''}
     ${ (beforeArea === 'bottomArea' && nowArea === 'topArea') ? 'slide-top-lg' : ''}
     ${ (beforeArea === 'topArea' && nowArea === 'bottomArea') ? 'slide-bottom-lg' : ''}
-    w-full  bg-[none] border-black transition-[height] duration-500 ease-in-out z-[49]`}>
+    w-full  bg-[none] border-black transition-[height] duration-500 ease-in-out z-49 `}>
       <div className="h-full w-full flex justify-center items-center">PERSONAL</div>
     </div>
     );

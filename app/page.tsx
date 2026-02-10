@@ -5,6 +5,7 @@
   import CommercialMain from "@/components/commercial/commercialMain";
   import { useNowArea } from "@/stores/nowArea"
   import { useBeforeArea } from "@/stores/beforeArea"
+import PersonalMain from "@/components/personal/personalMain";
 
 export default function Page() {
   const { nowArea, setNowArea } = useNowArea();
@@ -12,7 +13,7 @@ export default function Page() {
   
   return (
     <div className={`fixed w-screen h-screen font-[600] text-[14px] overflow-y-hidden`}>
-      <div className="flex flex-col justify-center min-h-screen">
+      <div className="relative flex flex-col justify-center min-h-screen ">
         
           <TopArea />
 
@@ -23,14 +24,16 @@ export default function Page() {
       </div>
     
       <div className={`
-        ${ (beforeArea === 'middleArea' && nowArea === 'bottomArea') ? 'top-[0]' : 'top-[100vh]'}
-        ${ (beforeArea === 'middleArea' && nowArea === 'topArea') ? '' : ''}
-        ${ (beforeArea === 'bottomArea' && nowArea === 'topArea') ? '' : ''}
-        ${ (beforeArea === 'topArea' && nowArea === 'bottomArea') ? '' : ''}
-        absolute left-0 w-full h-screen transition-[top] duration-700 ease-in-out`}>
+        ${nowArea === 'bottomArea' ? 'top-0' : 'top-[100vh]'}
+        absolute left-0 w-full h-screen transition-[top] duration-700 ease-in-out z-30`}>
         <CommercialMain />
       </div>
 
+      <div className={`
+        ${nowArea === 'topArea' ? 'top-0' : 'top-[-100vh]'}
+        absolute left-0 w-full h-screen transition-[top] duration-700 ease-in-out z-30`}>
+        <PersonalMain />
+      </div>
     </div>
   )
 }
