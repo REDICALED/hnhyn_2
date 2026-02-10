@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNowArea } from "@/stores/nowArea";
 import { useBeforeArea } from "@/stores/beforeArea";
 
