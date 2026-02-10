@@ -86,56 +86,73 @@ export default function CommercialMain() {
 }
 
 function Draggable({ item, onDrag, bringFront }: any) {
-  const [start, setStart] = useState<any>(null);
+  const ref = useRef<HTMLImageElement>(null);
+  const start = useRef<any>(null);
 
   useEffect(() => {
     const move = (e: MouseEvent | TouchEvent) => {
-      if (!start) return;
+      if (!start.current || !ref.current) return;
 
       const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
       const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
 
-      onDrag(item.id, clientX - start.x, clientY - start.y);
-      setStart({ x: clientX, y: clientY });
+      const dx = clientX - start.current.x;
+      const dy = clientY - start.current.y;
+
+      ref.current.style.transform =
+        `translate(${item.x + dx}px, ${item.y + dy}px) rotate(${item.rot}deg)`;
     };
 
-    const up = () => setStart(null);
+    const up = (e: MouseEvent | TouchEvent) => {
+      if (!start.current) return;
 
-    window.addEventListener("mousemove", move);
+      const clientX = "changedTouches" in e ? e.changedTouches[0].clientX : e.clientX;
+      const clientY = "changedTouches" in e ? e.changedTouches[0].clientY : e.clientY;
+
+      onDrag(
+        item.id,
+        clientX - start.current.x,
+        clientY - start.current.y
+      );
+
+      start.current = null;
+    };
+
+    window.addEventListener("mousemove", move, { passive: true });
     window.addEventListener("mouseup", up);
-
-    window.addEventListener("touchmove", move);
+    window.addEventListener("touchmove", move, { passive: true });
     window.addEventListener("touchend", up);
 
     return () => {
       window.removeEventListener("mousemove", move);
       window.removeEventListener("mouseup", up);
-
       window.removeEventListener("touchmove", move);
       window.removeEventListener("touchend", up);
     };
-  }, [start]);
+  }, [item]);
 
   return (
     <img
+      ref={ref}
       src={item.src}
-      className="h-[50vh] absolute cursor-grab active:cursor-grabbing select-none"
+      className="h-[50vh] absolute cursor-grab active:cursor-grabbing select-none touch-none"
       style={{
         transform: `translate(${item.x}px, ${item.y}px) rotate(${item.rot}deg)`,
       }}
       onMouseDown={e => {
-        setStart({ x: e.clientX, y: e.clientY });
+        start.current = { x: e.clientX, y: e.clientY };
         bringFront(item.id);
       }}
       onTouchStart={e => {
-        setStart({
+        start.current = {
           x: e.touches[0].clientX,
           y: e.touches[0].clientY,
-        });
+        };
         bringFront(item.id);
       }}
       draggable={false}
     />
   );
 }
+
 
