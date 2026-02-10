@@ -4,7 +4,7 @@ export default function middleArea() {
   const { nowArea, setNowArea } = useNowArea();
   
   return (
-    <div className={`${ nowArea === 'middleArea' ? '' : 'hidden'  } h-[10vh] w-full bg-[none] z-49 `}>
+    <div className={`${ nowArea === 'middleArea' ? '' : 'hidden'} max-md:hidden h-[10vh] w-full bg-[none] z-49 `}>
       <div className="flex h-full  w-full justify-center items-center ">
         <div className="flex h-auto ">
             <div className="w-1/6 relative">

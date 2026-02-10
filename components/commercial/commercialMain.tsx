@@ -35,7 +35,7 @@ export default function CommercialMain() {
           src,
           x: 0,
           y: 0,
-          rot: Math.random() * 30 - 10,
+          rot: Math.random() * 45 - 10,
         }))
     );
   };
@@ -61,14 +61,6 @@ export default function CommercialMain() {
     );
   };
 
-  const bringFront = (id: number) => {
-    setItems(prev => {
-      const target = prev.find(it => it.id === id);
-      const rest = prev.filter(it => it.id !== id);
-      return [...rest, target];
-    });
-  };
-
   if (!mounted) return null;
 
   return (
@@ -78,16 +70,16 @@ export default function CommercialMain() {
           key={it.id}
           item={it}
           onDrag={onDrag}
-          bringFront={bringFront}
         />
       ))}
     </div>
   );
 }
 
-function Draggable({ item, onDrag, bringFront }: any) {
+function Draggable({ item, onDrag }: any) {
   const ref = useRef<HTMLImageElement>(null);
   const start = useRef<any>(null);
+  const [pressed, setPressed] = useState(false);
 
   useEffect(() => {
     const move = (e: MouseEvent | TouchEvent) => {
@@ -104,6 +96,8 @@ function Draggable({ item, onDrag, bringFront }: any) {
     };
 
     const up = (e: MouseEvent | TouchEvent) => {
+        setPressed(false);
+
       if (!start.current) return;
 
       const clientX = "changedTouches" in e ? e.changedTouches[0].clientX : e.clientX;
@@ -135,21 +129,35 @@ function Draggable({ item, onDrag, bringFront }: any) {
     <img
       ref={ref}
       src={item.src}
-      className="h-[50vh] absolute cursor-grab active:cursor-grabbing select-none touch-none"
+      className={`
+  transition-[filter] duration-300
+  ${pressed ? 'invert' : 'hover:invert'}
+  w-[32vw] md:w-[20vw] absolute
+  cursor-grab active:cursor-grabbing
+  select-none touch-none
+`}
       style={{
         transform: `translate(${item.x}px, ${item.y}px) rotate(${item.rot}deg)`,
       }}
       onMouseDown={e => {
-        start.current = { x: e.clientX, y: e.clientY };
-        bringFront(item.id);
-      }}
-      onTouchStart={e => {
-        start.current = {
-          x: e.touches[0].clientX,
-          y: e.touches[0].clientY,
-        };
-        bringFront(item.id);
-      }}
+  e.preventDefault();
+  setPressed(true);
+  start.current = { x: e.clientX, y: e.clientY };
+
+  ref.current?.parentElement?.appendChild(ref.current);
+}}
+
+onTouchStart={e => {
+  setPressed(true);
+  start.current = {
+    x: e.touches[0].clientX,
+    y: e.touches[0].clientY,
+  };
+
+  ref.current?.parentElement?.appendChild(ref.current);
+}}
+
+
       draggable={false}
     />
   );
