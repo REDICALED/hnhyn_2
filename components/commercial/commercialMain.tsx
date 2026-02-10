@@ -64,7 +64,7 @@ export default function CommercialMain() {
   if (!mounted) return null;
 
   return (
-    <div className="h-[100vh] w-full flex justify-center items-center relative">
+    <div className="h-dvh w-full flex justify-center items-center relative">
       {items.map(it => (
         <Draggable
           key={it.id}
