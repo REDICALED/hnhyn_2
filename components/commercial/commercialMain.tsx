@@ -89,10 +89,14 @@ function Draggable({ item, onDrag, bringFront }: any) {
   const [start, setStart] = useState<any>(null);
 
   useEffect(() => {
-    const move = (e: MouseEvent) => {
+    const move = (e: MouseEvent | TouchEvent) => {
       if (!start) return;
-      onDrag(item.id, e.clientX - start.x, e.clientY - start.y);
-      setStart({ x: e.clientX, y: e.clientY });
+
+      const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+      const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+
+      onDrag(item.id, clientX - start.x, clientY - start.y);
+      setStart({ x: clientX, y: clientY });
     };
 
     const up = () => setStart(null);
@@ -100,9 +104,15 @@ function Draggable({ item, onDrag, bringFront }: any) {
     window.addEventListener("mousemove", move);
     window.addEventListener("mouseup", up);
 
+    window.addEventListener("touchmove", move);
+    window.addEventListener("touchend", up);
+
     return () => {
       window.removeEventListener("mousemove", move);
       window.removeEventListener("mouseup", up);
+
+      window.removeEventListener("touchmove", move);
+      window.removeEventListener("touchend", up);
     };
   }, [start]);
 
@@ -117,7 +127,15 @@ function Draggable({ item, onDrag, bringFront }: any) {
         setStart({ x: e.clientX, y: e.clientY });
         bringFront(item.id);
       }}
+      onTouchStart={e => {
+        setStart({
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY,
+        });
+        bringFront(item.id);
+      }}
       draggable={false}
     />
   );
 }
+
