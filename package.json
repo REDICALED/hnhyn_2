@@ -14,6 +14,7 @@
     "postcss": "^8.5.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-responsive-masonry": "^2.7.1",
     "tailwindcss": "^4.1.18",
     "tailwindcss-animistacss": "^1.0.7",
     "zustand": "^5.0.11"
