@@ -1,9 +1,14 @@
+// components/commercial/CommercialMain.tsx
 'use client';
 
-import { useState, useEffect, useRef, useCallback, memo } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNowArea } from "@/stores/nowArea";
 import { useBeforeArea } from "@/stores/beforeArea";
-
+import DraggableImage, { type DraggableItem } from "@/components/utils/draggable";
+import dynamic from "next/dynamic";
+const PortraitMasonry = dynamic(() => import("@/components/commercial/commercialList"), {
+  ssr: false,
+});
 const FILES = [
   "/commercial/1.jpg",
   "/commercial/2.jpg",
@@ -18,7 +23,10 @@ export default function CommercialMain() {
   const { nowArea } = useNowArea();
   const { beforeArea } = useBeforeArea();
 
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<DraggableItem[]>([]);
+  const [portraitOpen, setPortraitOpen] = useState(false);
+  const openAfterEnterRef = useRef(false);
+  const [portraitMode, setPortraitMode] = useState("");
 
   useEffect(() => {
     setItems(
@@ -32,128 +40,105 @@ export default function CommercialMain() {
     );
   }, []);
 
+  const resetPositions = useCallback(() => {
+    setItems((prev) => {
+      const shuffled = [...prev].sort(() => Math.random() - 0.5);
+      return shuffled.map((it) => ({
+        ...it,
+        x: 0,
+        y: 0,
+        rot: Math.random() * 45 - 10,
+      }));
+    });
+  }, []);
 
-  // 영역 변경 시 위치만 초기화 (src 유지)
   useEffect(() => {
+    // 페이지 전환으로 CommercialMain이 들어올 때(원하시면 여기 타이밍에 맞춰 열리도록)
+    // bottom -> top 이동 케이스는 기존 로직 유지
     if (beforeArea === "bottomArea" && nowArea === "topArea") {
       const t = setTimeout(resetPositions, 500);
       return () => clearTimeout(t);
     }
     resetPositions();
-  }, [nowArea, beforeArea]);
-
-  const resetPositions = () => {
-    setItems(prev =>
-      prev.map(it => ({
-        ...it,
-        x: 0,
-        y: 0,
-        rot: Math.random() * 45 - 10,
-      }))
-    );
-  };
+  }, [nowArea, beforeArea, resetPositions]);
 
   const onDrag = useCallback((id: number, dx: number, dy: number) => {
-    setItems(prev =>
-      prev.map(it =>
-        it.id === id ? { ...it, x: it.x + dx, y: it.y + dy } : it
-      )
+    setItems((prev) =>
+      prev.map((it) => (it.id === id ? { ...it, x: it.x + dx, y: it.y + dy } : it))
     );
   }, []);
 
+  const openPortrait = () => {
+    // CommercialMain이 이미 떠 있는 상태라면 바로 열림
+    // 만약 nowArea 전환 직후에 누를 수 있다면, 아래 플래그로 딜레이 오픈도 가능
+    if (nowArea === "bottomArea") {
+      setPortraitOpen(true);
+      return;
+    }
+    openAfterEnterRef.current = true;
+  };
+
+  // CommercialMain이 화면에 올라온 뒤에 자동 오픈(필요 없으면 이 useEffect 삭제)
+  useEffect(() => {
+    if (nowArea === "bottomArea" && openAfterEnterRef.current) {
+      openAfterEnterRef.current = false;
+      setPortraitOpen(true);
+    }
+  }, [nowArea]);
+
   return (
-    <div className="h-svh w-full flex justify-center items-center relative">
-      <div className={`absolute top-[0] z-[47] `}>
-        <span>2024</span>
-        &nbsp;
-        <span>2025</span>
-        &nbsp;
-        <span>2026</span>
+    <div className="h-svh w-full flex justify-center items-center relative overflow-hidden">
+      <div className="absolute top-0 z-[47] w-[100vw] text-center pt-[6px] bg-none backdrop-blur-[4px] flex justify-center space-x-[5vw]">
+        <button
+          onClick={() => {
+            setPortraitMode("portrait");
+            openPortrait();
+          }}
+          className="cursor-pointer"
+        >
+          PORTRAIT
+        </button>
+
+        <button
+          onClick={() => {
+            setPortraitMode("portrait");
+            setPortraitOpen(false);
+          }}
+          className="cursor-pointer"
+        >
+          NON_PORTRAIT
+        </button>
         &nbsp;
       </div>
-      {items.map(it => (
-        <Draggable key={it.id} item={it} onDrag={onDrag} />
-      ))}
+
+      {/* draggable 이미지들 */}
+      <div className={portraitOpen ? "pointer-events-none" : ""}>
+        {  items.map((it) => (
+          <DraggableImage
+            key={it.id}
+            item={it}
+            onDrag={onDrag}
+          className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[32vw] md:w-[20vw]
+          transition-all duration-700
+          ${portraitMode != ""
+      ? "opacity-0 invisible pointer-events-none"
+      : "opacity-100 visible pointer-events-auto"}
+        `}
+
+          />
+        ))}
+      </div>
+
+      {/* masonry 패널: 아래 -> 위 */}
+      <div
+        className={`
+          absolute left-0 bottom-0 w-full h-svh z-40
+          transition-transform duration-700 ease-in-out
+          ${portraitOpen ? "translate-y-0" : "translate-y-full pointer-events-none"}
+        `}
+      >
+        <PortraitMasonry />
+      </div>
     </div>
   );
 }
-
-const Draggable = memo(function Draggable({ item, onDrag }: any) {
-  const ref = useRef<HTMLImageElement>(null);
-  const start = useRef<any>(null);
-  const [pressed, setPressed] = useState(false);
-
-  useEffect(() => {
-    const move = (e: MouseEvent | TouchEvent) => {
-      if (!start.current || !ref.current) return;
-
-      const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
-      const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
-
-      const dx = clientX - start.current.x;
-      const dy = clientY - start.current.y;
-
-      ref.current.style.transform =
-        `translate(${item.x + dx}px, ${item.y + dy}px) rotate(${item.rot}deg)`;
-    };
-
-    const up = (e: MouseEvent | TouchEvent) => {
-      setPressed(false);
-      if (!start.current) return;
-
-      const clientX =
-        "changedTouches" in e ? e.changedTouches[0].clientX : e.clientX;
-      const clientY =
-        "changedTouches" in e ? e.changedTouches[0].clientY : e.clientY;
-
-      onDrag(item.id, clientX - start.current.x, clientY - start.current.y);
-      start.current = null;
-    };
-
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", up);
-    window.addEventListener("touchmove", move);
-    window.addEventListener("touchend", up);
-
-    return () => {
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseup", up);
-      window.removeEventListener("touchmove", move);
-      window.removeEventListener("touchend", up);
-    };
-  }, [item, onDrag]);
-
-  return (
-    <img
-      ref={ref}
-      src={item.src}
-      loading="eager"
-      draggable={false}
-      className={`
-        transition-[filter] duration-300
-        ${pressed ? "invert" : "hover:invert"}
-        w-[32vw] md:w-[20vw] absolute
-        cursor-grab active:cursor-grabbing
-        select-none touch-none
-      `}
-      style={{
-        transform: `translate(${item.x}px, ${item.y}px) rotate(${item.rot}deg)`,
-        willChange: "transform",
-      }}
-      onMouseDown={e => {
-        e.preventDefault();
-        setPressed(true);
-        start.current = { x: e.clientX, y: e.clientY };
-        ref.current?.parentElement?.appendChild(ref.current);
-      }}
-      onTouchStart={e => {
-        setPressed(true);
-        start.current = {
-          x: e.touches[0].clientX,
-          y: e.touches[0].clientY,
-        };
-        ref.current?.parentElement?.appendChild(ref.current);
-      }}
-    />
-  );
-});
