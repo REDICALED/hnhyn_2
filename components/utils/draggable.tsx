@@ -1,15 +1,8 @@
-// components/DraggableImage.tsx
 'use client';
 
 import { memo, useEffect, useRef, useState } from "react";
 
-type DraggableItem = {
-  id: number;
-  src: string;
-  x: number;
-  y: number;
-  rot: number;
-};
+type DraggableItem = { id: number; src: string; x: number; y: number; rot: number; };
 
 type Props = {
   item: DraggableItem;
@@ -19,49 +12,26 @@ type Props = {
 
 function DraggableImage({ item, onDrag, className = "" }: Props) {
   const ref = useRef<HTMLImageElement>(null);
+
   const start = useRef<{ x: number; y: number } | null>(null);
+  const base = useRef<{ x: number; y: number }>({ x: item.x, y: item.y }); // 드래그 시작 시 기준
+  const live = useRef<{ x: number; y: number }>({ x: item.x, y: item.y }); // 드래그 중 실시간 좌표
+
   const [pressed, setPressed] = useState(false);
 
+  // 외부에서 item.x/y가 바뀌면 live도 동기화
   useEffect(() => {
-    const move = (e: MouseEvent | TouchEvent) => {
-      if (!start.current || !ref.current) return;
+    if (!pressed) {
+      live.current = { x: item.x, y: item.y };
+      base.current = { x: item.x, y: item.y };
+    }
+  }, [item.x, item.y, pressed]);
 
-      const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
-      const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
-
-      const dx = clientX - start.current.x;
-      const dy = clientY - start.current.y;
-
-      ref.current.style.transform =
-        `translate(${item.x + dx}px, ${item.y + dy}px) rotate(${item.rot}deg)`;
-    };
-
-    const up = (e: MouseEvent | TouchEvent) => {
-      if (!start.current) return;
-
-      setPressed(false);
-
-      const clientX =
-        "changedTouches" in e ? e.changedTouches[0].clientX : e.clientX;
-      const clientY =
-        "changedTouches" in e ? e.changedTouches[0].clientY : e.clientY;
-
-      onDrag(item.id, clientX - start.current.x, clientY - start.current.y);
-      start.current = null;
-    };
-
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", up);
-    window.addEventListener("touchmove", move, { passive: false });
-    window.addEventListener("touchend", up);
-
-    return () => {
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseup", up);
-      window.removeEventListener("touchmove", move as any);
-      window.removeEventListener("touchend", up);
-    };
-  }, [item.id, item.x, item.y, item.rot, onDrag]);
+  const applyTransform = (x: number, y: number) => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.transform = `translate(${x}px, ${y}px) rotate(${item.rot}deg)`;
+  };
 
   return (
     <img
@@ -77,19 +47,56 @@ function DraggableImage({ item, onDrag, className = "" }: Props) {
         ${className}
       `}
       style={{
-        transform: `translate(${item.x}px, ${item.y}px) rotate(${item.rot}deg)`,
+        transform: `translate(${live.current.x}px, ${live.current.y}px) rotate(${item.rot}deg)`,
         willChange: "transform",
       }}
-      onMouseDown={e => {
+      onPointerDown={(e) => {
+        const el = ref.current;
+        if (!el) return;
+
         e.preventDefault();
         setPressed(true);
+
+        // 포인터 캡쳐: 손가락/마우스가 밖으로 나가도 계속 이벤트 받음
+        el.setPointerCapture(e.pointerId);
+
         start.current = { x: e.clientX, y: e.clientY };
-        ref.current?.parentElement?.appendChild(ref.current);
+        base.current = { x: live.current.x, y: live.current.y };
+
+        el.parentElement?.appendChild(el);
       }}
-      onTouchStart={e => {
-        setPressed(true);
-        start.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-        ref.current?.parentElement?.appendChild(ref.current);
+      onPointerMove={(e) => {
+        if (!start.current) return;
+
+        e.preventDefault();
+
+        const dx = e.clientX - start.current.x;
+        const dy = e.clientY - start.current.y;
+
+        const x = base.current.x + dx;
+        const y = base.current.y + dy;
+
+        live.current = { x, y };
+        applyTransform(x, y);
+      }}
+      onPointerUp={(e) => {
+        const el = ref.current;
+        if (!start.current || !el) return;
+
+        e.preventDefault();
+        setPressed(false);
+
+        const dx = e.clientX - start.current.x;
+        const dy = e.clientY - start.current.y;
+
+        start.current = null;
+
+        // 최종 반영은 기존대로 onDrag에서 부모 상태 업데이트
+        onDrag(item.id, dx, dy);
+      }}
+      onPointerCancel={() => {
+        start.current = null;
+        setPressed(false);
       }}
     />
   );

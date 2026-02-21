@@ -9,6 +9,7 @@ export default function topArea() {
   return (
     <div
     onClick={() => {
+      if(nowArea === "topArea") return;
           setBeforeArea(nowArea);
           setNowArea("topArea");
         }}
@@ -19,7 +20,8 @@ export default function topArea() {
     ${ (beforeArea === 'middleArea' && nowArea === 'topArea') ? 'slide-top-sm' : ''}
     ${ (beforeArea === 'bottomArea' && nowArea === 'topArea') ? 'slide-top-lg' : ''}
     ${ (beforeArea === 'topArea' && nowArea === 'bottomArea') ? 'slide-bottom-lg' : ''}
-    w-full  bg-[white] border-black transition-[height] duration-500 ease-in-out z-49 `}>
+    w-full  bg-[white] border-black transition-[height] duration-500 ease-in-out z-49
+    cursor-pointer `}>
       <div className="h-full w-full flex justify-center items-center">PERSONAL</div>
     </div>
     );

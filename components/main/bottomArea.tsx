@@ -10,6 +10,7 @@ export default function bottomArea() {
   return (
     <div 
     onClick={() => {
+      if(nowArea === "bottomArea") return;
           setBeforeArea(nowArea);
           setNowArea("bottomArea");
         }}
@@ -19,7 +20,8 @@ export default function bottomArea() {
     ${ (beforeArea === 'middleArea' && nowArea === 'topArea') ? 'slide-top-sm' : ''}
     ${ (beforeArea === 'bottomArea' && nowArea === 'topArea') ? 'slide-top-lg' : ''}
     ${ (beforeArea === 'topArea' && nowArea === 'bottomArea') ? 'slide-bottom-lg ' : ''}
-     bg-[white] w-full border-black transition-[height] duration-500 ease-in-out z-49`}>
+     bg-[white] w-full border-black transition-[height] duration-500 ease-in-out z-49
+     cursor-pointer`}>
       <div className="h-full w-full flex justify-center items-center">COMMERCIAL</div>
     </div>
     );

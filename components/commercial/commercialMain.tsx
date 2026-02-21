@@ -112,17 +112,22 @@ export default function CommercialMain() {
       </div>
 
       {/* draggable 이미지들 */}
-      <div className={portraitOpen ? "pointer-events-none" : ""}>
+      <div
+      
+      style={{
+    opacity: portraitMode !== "" ? 0 : 1,
+    transition: "opacity 400ms ease",
+    willChange: "opacity",
+    pointerEvents: portraitMode !== "" ? "none" : "auto",
+  }}>
         {  items.map((it) => (
           <DraggableImage
             key={it.id}
             item={it}
             onDrag={onDrag}
           className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[32vw] md:w-[20vw]
-          transition-all duration-700
-          ${portraitMode != ""
-      ? "opacity-0 invisible pointer-events-none"
-      : "opacity-100 visible pointer-events-auto"}
+          transition-[filter] duration-300
+          
         `}
 
           />
@@ -137,7 +142,7 @@ export default function CommercialMain() {
           ${portraitOpen ? "translate-y-0" : "translate-y-full pointer-events-none"}
         `}
       >
-        <PortraitMasonry />
+        <PortraitMasonry portraitOpen={portraitOpen} />
       </div>
     </div>
   );
