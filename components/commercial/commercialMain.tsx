@@ -6,6 +6,9 @@ import { useNowArea } from "@/stores/nowArea";
 import { useBeforeArea } from "@/stores/beforeArea";
 import DraggableImage, { type DraggableItem } from "@/components/utils/draggable";
 import dynamic from "next/dynamic";
+import { AnimatePresence, motion } from "framer-motion";
+import SheetOverlay from "@/components/utils/SheetOverlay";
+
 const PortraitMasonry = dynamic(() => import("@/components/commercial/commercialList"), {
   ssr: false,
 });
@@ -19,7 +22,7 @@ const FILES = [
   "/commercial/7.jpg",
 ];
 
-export default function CommercialMain() {
+export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc: string | null; setActiveSrc: (src: string | null) => void } ) {
   const { nowArea } = useNowArea();
   const { beforeArea } = useBeforeArea();
 
@@ -142,8 +145,30 @@ export default function CommercialMain() {
           ${portraitOpen ? "translate-y-0" : "translate-y-full pointer-events-none"}
         `}
       >
-        <PortraitMasonry portraitOpen={portraitOpen} />
+        <PortraitMasonry
+      portraitOpen={portraitOpen}
+      activeSrc={activeSrc}
+      onSelect={(src) => setActiveSrc(src)}
+    />
       </div>
+      <SheetOverlay
+  open={activeSrc !== null}
+  onClose={() => setActiveSrc(null)}
+>
+  {activeSrc && (
+    <div className="flex justify-center items-center py-6">
+      <img
+        src={activeSrc}
+        style={{ height: "50vh" }}
+        className="w-auto object-contain"
+        draggable={false}
+      />
+    </div>
+  )}
+
+  <div className="px-4 pb-10">
+  </div>
+</SheetOverlay>
     </div>
   );
 }

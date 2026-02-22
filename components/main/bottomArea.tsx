@@ -3,7 +3,7 @@
 import { useNowArea } from "@/stores/nowArea"
 import { useBeforeArea } from "@/stores/beforeArea";
 
-export default function bottomArea() {
+export default function bottomArea( {activeSrc, setActiveSrc }: { activeSrc: string | null; setActiveSrc: (src: string | null) => void } ) {
   const { nowArea, setNowArea } = useNowArea();
   const { beforeArea, setBeforeArea } = useBeforeArea();
   
@@ -20,6 +20,7 @@ export default function bottomArea() {
     ${ (beforeArea === 'middleArea' && nowArea === 'topArea') ? 'slide-top-sm' : ''}
     ${ (beforeArea === 'bottomArea' && nowArea === 'topArea') ? 'slide-top-lg' : ''}
     ${ (beforeArea === 'topArea' && nowArea === 'bottomArea') ? 'slide-bottom-lg ' : ''}
+
      bg-[white] w-full border-black transition-[height] duration-500 ease-in-out z-49
      cursor-pointer`}>
       <div className="h-full w-full flex justify-center items-center">COMMERCIAL</div>

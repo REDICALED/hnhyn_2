@@ -6,27 +6,30 @@
   import { useNowArea } from "@/stores/nowArea"
   import { useBeforeArea } from "@/stores/beforeArea"
 import PersonalMain from "@/components/personal/personalMain";
+import { useState } from "react";
 
 export default function Page() {
   const { nowArea, setNowArea } = useNowArea();
   const { beforeArea, setBeforeArea } = useBeforeArea();
-  
+  const [activeSrc, setActiveSrc] = useState<string | null>(null);
+
+
   return (
     <div className={`fixed w-screen h-svh font-[500] text-[14px] overflow-hidden`}>
       <div className="relative flex flex-col justify-center min-h-svh ">
         
-          <TopArea />
+          <TopArea activeSrc={activeSrc} setActiveSrc={setActiveSrc} />
 
           <MiddleArea />
 
-          <BottomArea />
+          <BottomArea activeSrc={activeSrc} setActiveSrc={setActiveSrc} />
 
       </div>
     
       <div className={`
         ${nowArea === 'bottomArea' ? 'top-0' : 'top-[100svh]'}
         absolute left-0 w-full h-svh transition-[top] duration-700 ease-in-out z-30`}>
-        <CommercialMain />
+        <CommercialMain activeSrc={activeSrc} setActiveSrc={setActiveSrc} />
       </div>
 
       <div className={`

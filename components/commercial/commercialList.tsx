@@ -3,10 +3,19 @@
 
 import { use, useEffect, useState } from "react";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import { motion } from "framer-motion";
 
 const PORTRAIT_FILES = Array.from({ length: 13 }, (_, i) => `/commercial/portrait/${i + 1}.jpg`);
 
-export default function PortraitMasonry( { portraitOpen }: { portraitOpen: boolean }) {
+export default function PortraitMasonry({
+  portraitOpen,
+  activeSrc,
+  onSelect,
+}: {
+  portraitOpen: boolean;
+  activeSrc: string | null;
+  onSelect: (src: string) => void;
+}) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -34,11 +43,15 @@ export default function PortraitMasonry( { portraitOpen }: { portraitOpen: boole
         >
           <Masonry style={{ justifyContent: "center" }}>
 
-            {PORTRAIT_FILES.map((src) => {
+            {PORTRAIT_FILES.map((src, id) => {
               const fileName = src;
-
+              const isActive = activeSrc === src;
               return (
-                <div key={src} className="relative group cursor-pointer">
+                <div
+                  key={src}
+                  className="relative group cursor-pointer"
+                  onClick={() => onSelect(src)}
+                >
                   <img
                     src={src}
                     loading="lazy"

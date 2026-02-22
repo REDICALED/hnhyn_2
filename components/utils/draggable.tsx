@@ -40,12 +40,14 @@ function DraggableImage({ item, onDrag, className = "" }: Props) {
       loading="eager"
       draggable={false}
       className={`
-        transition-[filter] duration-300
-        ${pressed ? "invert" : "hover:invert"}
-        cursor-grab active:cursor-grabbing
-        select-none touch-none
-        ${className}
-      `}
+      transition-[filter] duration-300
+      ${pressed
+        ? "invert hue-rotate-180"
+        : "hover:invert hover:hue-rotate-180"}
+      cursor-grab active:cursor-grabbing
+      select-none touch-none
+      ${className}
+    `}
       style={{
         transform: `translate(${live.current.x}px, ${live.current.y}px) rotate(${item.rot}deg)`,
         willChange: "transform",
