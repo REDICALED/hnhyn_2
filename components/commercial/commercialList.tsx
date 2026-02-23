@@ -31,8 +31,8 @@ export default function PortraitMasonry({
   }, [portraitOpen]);
 
   return (
-<div className="w-full h-full overflow-y-auto overscroll-contain pt-[24px] px-[40px] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      <div className="pb-[16px] pt-[10px] ">
+<div className="w-full h-full overflow-y-auto overscroll-contain pt-[41px] px-[40px] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="pb-[16px]  ">
         <ResponsiveMasonry
           columnsCountBreakPoints={{
             0: 2,

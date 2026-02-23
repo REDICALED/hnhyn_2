@@ -8,6 +8,7 @@ import DraggableImage, { type DraggableItem } from "@/components/utils/draggable
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import SheetOverlay from "@/components/utils/SheetOverlay";
+import ModeButton from "@/components/ui/modeButton";
 
 const PortraitMasonry = dynamic(() => import("@/components/commercial/commercialList"), {
   ssr: false,
@@ -90,29 +91,34 @@ export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc:
   }, [nowArea]);
 
   return (
-    <div className="h-svh w-full flex justify-center items-center relative overflow-hidden">
-      <div className="absolute top-0 z-[47] w-[100vw] text-center pt-[6px] bg-none backdrop-blur-[4px] flex justify-center space-x-[5vw]">
-        <button
-          onClick={() => {
-            setPortraitMode("portrait");
-            openPortrait();
-          }}
-          className="cursor-pointer"
-        >
-          PORTRAIT
-        </button>
+    <div className={` h-svh w-full flex justify-center items-center relative overflow-hidden transition-opacity duration-300`}>
+<div className="absolute top-0 left-0 z-[47] w-full bg-white pt-[10px] pb-[20px]">
+  {/* 가운데 고정 */}
+  <div className="absolute left-1/2 -translate-x-1/2 flex items-center space-x-[5vw]">
+    <button
+      onClick={() => {
+        setPortraitMode("portrait");
+        openPortrait();
+      }}
+      className="cursor-pointer pl-[40px]"
+    >
+      PORTRAIT
+    </button>
 
-        <button
-          onClick={() => {
-            setPortraitMode("portrait");
-            setPortraitOpen(false);
-          }}
-          className="cursor-pointer"
-        >
-          NON_PORTRAIT
-        </button>
-        &nbsp;
-      </div>
+    <button
+      onClick={() => {
+        setPortraitMode("portrait");
+        setPortraitOpen(false);
+      }}
+      className="cursor-pointer"
+    >
+      NON_PORTRAIT
+    </button>
+  </div>
+
+  {/* 오른쪽 고정 */}
+      <ModeButton />
+</div>
 
       {/* draggable 이미지들 */}
       <div
@@ -152,22 +158,22 @@ export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc:
     />
       </div>
       <SheetOverlay
-  open={activeSrc !== null}
-  onClose={() => setActiveSrc(null)}
->
-  {activeSrc && (
-    <div className="flex justify-center items-center py-6">
-      <img
-        src={activeSrc}
-        style={{ height: "50vh" }}
-        className="w-auto object-contain"
-        draggable={false}
-      />
-    </div>
-  )}
+    open={activeSrc !== null}
+    onClose={() => setActiveSrc(null)}
+  >
+    {activeSrc && (
+      <div className="flex justify-center items-center py-6">
+        <img
+          src={activeSrc}
+          style={{ height: "50vh" }}
+          className="w-auto object-contain"
+          draggable={false}
+        />
+      </div>
+    )}
 
-  <div className="px-4 pb-10">
-  </div>
+    <div className="px-4 pb-10">
+    </div>
 </SheetOverlay>
     </div>
   );
