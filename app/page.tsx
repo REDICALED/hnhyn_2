@@ -15,7 +15,7 @@ export default function Page() {
 
 
   return (
-    <div className={`fixed w-screen h-svh font-[500] text-[14px] overflow-hidden`}>
+    <div className={`fixed w-screen h-svh font-[400] text-[16px] overflow-hidden`}>
       <div className="relative flex flex-col justify-center min-h-svh ">
         
           <TopArea activeSrc={activeSrc} setActiveSrc={setActiveSrc} />

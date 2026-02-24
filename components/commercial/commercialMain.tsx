@@ -92,7 +92,7 @@ export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc:
 
   return (
     <div className={` h-svh w-full flex justify-center items-center relative overflow-hidden transition-opacity duration-300`}>
-<div className="absolute top-0 left-0 z-[47] w-full bg-white pt-[10px] pb-[20px]">
+<div className="absolute top-0 left-0 z-[47] w-full bg-white pt-[10px] pb-[31px]">
   {/* 가운데 고정 */}
   <div className="absolute left-1/2 -translate-x-1/2 flex items-center space-x-[5vw]">
     <button
@@ -160,15 +160,24 @@ export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc:
       <SheetOverlay
     open={activeSrc !== null}
     onClose={() => setActiveSrc(null)}
+    route=": COMMERCIAL / 1PORTRAIT / 17_GAYOUNG"
+    title="TITLE, 2025"
+    description={`TEXT.\nI WORK ON PHOTOGRAPHY BASED IN SEOUL. THEY TRY TO RECOGNIZE THE SURROUNDING BEINGS THAT MAKE
+THINGS HAPPEN, BUT THEY DON'T SEE WELL CHANGE THE CONDITIONS TO EXPLORE NEW POSSIBILITIES.
+SOMETIMES THESE INTERESTS TOUCH VISUAL AND PHOTOGRAPHY SOMETIMES IT TOUCHES THE NUMEROUS 
+`}
   >
     {activeSrc && (
       <div className="flex justify-center items-center py-6">
         <img
           src={activeSrc}
-          style={{ height: "50vh" }}
-          className="w-auto object-contain"
+          style={{ maxWidth: "80vw",
+          maxHeight: "70vh",
+          }}
+          className="h-auto object-contain"
           draggable={false}
         />
+        
       </div>
     )}
 

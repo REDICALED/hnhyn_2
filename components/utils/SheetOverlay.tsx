@@ -5,12 +5,16 @@ import React, { useEffect, useState } from "react";
 export default function SheetOverlay({
   open,
   onClose,
-  header,
   children,
+  route,
+  title,
+  description
 }: {
   open: boolean;
   onClose: () => void;
-  header?: React.ReactNode;
+  route: string;
+  title: string;
+  description: string;
   children: React.ReactNode;
 }) {
   const [pe, setPe] = useState(open);
@@ -68,11 +72,24 @@ export default function SheetOverlay({
             }
           `}
         >
-          <div className="h-[10vh] flex items-center justify-between px-4 ">
-            <div>{header}</div>
-            <button onClick={onClose} className="px-2 mr-[50px] py-1 border">
-              BACK
+          <div className="ml-[20px]">
+            <div className="h-[5vh] flex items-center justify-between px-4 mt-[10px] ">
+            <button onClick={onClose} className="px-2 cursor-pointer ">
+              &lt; BACK
             </button>
+          </div>
+
+          <div className="h-auto flex items-start px-4 ">
+            <div className="w-1/2">
+              {route}
+            </div>
+            <div className="w-1/2 whitespace-pre-line leading-[1.2] ">
+              {title}
+              <br />
+              <br />
+              {description}
+            </div>
+          </div>
           </div>
 
           {children}
