@@ -12,14 +12,12 @@ export default function middleArea() {
             </div>
 
             <div className=" w-2/3 break-all pl-[50px]">
-              I WORK ON PHOTOGRAPHY BASED IN SEOUL. THEY TRY TO RECOGNIZE THE SURROUNDING BEINGS THAT MAKE THINGS HAPPEN, BUT THEY DON'T SEE WELL
-              CHANGE THE CONDITIONS TO EXPLORE NEW POSSIBILITIES.SOMETIMES THESE INTERESTS TOUCH VISUAL AND PHOTOGRAPHY SOMETIMES IT TOUCHES THE
-              NUMEROUS DIRECTIONS THAT YOU HAVE EXPERIENCED, SUCH AS NARRATIVE AND FASHION.
+              I work on photography based in Seoul. They try to recognize the surrounding beings that make things happen, but they don't see well. Change the conditions to explore new possibilities. Sometimes these interests touch visual and photography, sometimes they touch the numerous directions that you have experienced, such as narrative and fashion.
             </div>     
 
             <div className="w-1/6 relative">
               <div className="absolute bottom-[0] right-[0] pr-[40px] flex"> 
-              <a href="https://www.instagram.com/hanhyeon_/" className="no-underline text-inherit">INSTAGRAM</a>
+              <a href="https://www.instagram.com/hanhyeon_/" className="no-underline text-inherit">Instagram</a>
               <a href="https://www.instagram.com/hanhyeon_/" className="no-underline text-inherit pl-[20px]">E-MAIL</a>
               </div>
             </div>

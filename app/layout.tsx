@@ -1,15 +1,7 @@
 import type { Metadata } from "next";
-import { Noto_Sans_Mono } from 'next/font/google';
 import "./globals.css";
 import VerticalLineLeft from "@/components/verticalLineLeft";
 import VerticalLineRight from "@/components/verticalLineRight";
-
-const mono = Noto_Sans_Mono({
-  subsets: ['latin'],
-  weight: ['100','200','300','400','500','600','700','800','900'],
-  display: 'swap',
-  preload: true,
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -22,15 +14,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-<html lang="en" className={mono.className}>
-<body className="h-[100dvh] pb-[env(safe-area-inset-bottom)]">
-    <div className="">
-        <VerticalLineLeft />
-        <VerticalLineRight />
-          {children}
-    </div>
-  </body>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="https://use.typekit.net/ach3hzm.css" />
+</head>
+<body
+className="h-[100dvh] pb-[env(safe-area-inset-bottom)]"
+style={{ fontFamily: '"courier-std", monospace' }}
+>
+<div>
+<VerticalLineLeft />
+<VerticalLineRight />
+{children}
+</div>
+</body>
 </html>
-
   );
 }

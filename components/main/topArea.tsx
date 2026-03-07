@@ -15,7 +15,7 @@ export default function topArea( {activeSrc, setActiveSrc }: { activeSrc: string
         }}
           
     className={` 
-    ${nowArea != 'middleArea' ? 'h-[31px] py-1 border-y-2' : 'h-[calc(45svh+1px)] border-b-2'}
+    ${nowArea != 'middleArea' ? 'h-[31px] py-1 border-y' : 'h-[calc(45svh+1px)] border-b'}
     ${ ( !activeSrc && beforeArea === 'middleArea' && nowArea === 'bottomArea') ? 'slide-bottom-sm' : ''}
     ${ ( !activeSrc && beforeArea === 'middleArea' && nowArea === 'topArea') ? 'slide-top-sm' : ''}
     ${ ( !activeSrc && beforeArea === 'bottomArea' && nowArea === 'topArea') ? 'slide-top-lg' : ''}
@@ -33,7 +33,7 @@ export default function topArea( {activeSrc, setActiveSrc }: { activeSrc: string
       : undefined
   }
     >
-      <div className="h-full w-full flex justify-center items-center">PERSONAL</div>
+      <div className="h-full w-full flex justify-center items-center">Personal</div>
     </div>
     );
 }

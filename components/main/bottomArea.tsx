@@ -15,7 +15,7 @@ export default function bottomArea( {activeSrc, setActiveSrc }: { activeSrc: str
           setNowArea("bottomArea");
         }}
     className={`
-    ${nowArea != 'middleArea' ? 'h-[31px] py-1 border-y-2 -mt-[2px]' : 'h-[calc(45svh-1px)] max-md:border-0 border-t-2'}
+    ${nowArea != 'middleArea' ? 'h-[31px] py-1 border-y -mt-[2px]' : 'h-[calc(45svh-1px)] max-md:border-0 border-t'}
     ${ (beforeArea === 'middleArea' && nowArea === 'bottomArea') ? 'slide-bottom-sm' : ''}
     ${ (beforeArea === 'middleArea' && nowArea === 'topArea') ? 'slide-top-sm' : ''}
     ${ (beforeArea === 'bottomArea' && nowArea === 'topArea') ? 'slide-top-lg' : ''}
@@ -23,7 +23,7 @@ export default function bottomArea( {activeSrc, setActiveSrc }: { activeSrc: str
 
      bg-[white] w-full border-black transition-[height] duration-500 ease-in-out z-49
      cursor-pointer`}>
-      <div className="h-full w-full flex justify-center items-center">COMMERCIAL</div>
+      <div className="h-full w-full flex justify-center items-center">Commercial</div>
     </div>
     );
 }

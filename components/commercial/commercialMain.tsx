@@ -102,7 +102,7 @@ export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc:
       }}
       className="cursor-pointer pl-[40px]"
     >
-      PORTRAIT
+      Portrait
     </button>
 
     <button
@@ -112,7 +112,7 @@ export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc:
       }}
       className="cursor-pointer"
     >
-      NON_PORTRAIT
+      Non_Portrait
     </button>
   </div>
 
