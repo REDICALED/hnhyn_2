@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: ABCSyntMono;
+  src: url('/fonts/ABCSyntMono-Regular-Trial.woff2') format('woff2'),
+       url('/fonts/ABCSyntMono-Regular-Trial.woff') format('woff');
+}
+
 .slide-top-lg {
 	-webkit-animation: slide-top-lg 1s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
 	        animation: slide-top-lg 1s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;

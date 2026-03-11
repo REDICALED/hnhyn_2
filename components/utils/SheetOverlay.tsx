@@ -83,7 +83,7 @@ export default function SheetOverlay({
             <div className="w-1/2">
               {route}
             </div>
-            <div className="w-1/2 whitespace-pre-line leading-[1.2] ">
+            <div className="w-1/2 whitespace-pre-line">
               {title}
               <br />
               <br />

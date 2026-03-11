@@ -19,9 +19,8 @@ export default function RootLayout({
 <link rel="stylesheet" href="https://use.typekit.net/ach3hzm.css" />
 </head>
 <body
-className="h-[100dvh] pb-[env(safe-area-inset-bottom)]"
-style={{ fontFamily: '"courier-std", monospace' }}
->
+className="h-[100dvh] pb-[env(safe-area-inset-bottom)] leading-[1.2]"
+style={{ fontFamily: '"ABCSyntMono", monospace' }}>
 <div>
 <VerticalLineLeft />
 <VerticalLineRight />
