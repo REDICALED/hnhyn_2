@@ -21,7 +21,7 @@ export default function bottomArea( {activeSrc, setActiveSrc }: { activeSrc: str
     ${ (beforeArea === 'bottomArea' && nowArea === 'topArea') ? 'slide-top-lg' : ''}
     ${ (beforeArea === 'topArea' && nowArea === 'bottomArea') ? 'slide-bottom-lg ' : ''}
 
-     bg-[white] w-full border-black transition-[height] duration-500 ease-in-out z-49
+      w-full border-black z-49
      cursor-pointer`}>
       <div className="h-full w-full flex justify-center items-center">Commercial</div>
     </div>

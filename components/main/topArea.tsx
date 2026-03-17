@@ -22,13 +22,11 @@ export default function topArea( {activeSrc, setActiveSrc }: { activeSrc: string
     ${ ( !activeSrc && beforeArea === 'topArea' && nowArea === 'bottomArea') ? 'slide-bottom-lg' : ''}
     ${activeSrc ? 'slide-top-lg' : 'translate-y-0'}
 
-    w-full  bg-[white] border-black transition-[height] duration-500 ease-in-out z-49
+    w-full   border-black  z-49
     cursor-pointer `}
     style={
     activeSrc
       ? {
-          animationDuration: '0.7s',
-          WebkitAnimationDuration: '0.7s',
         }
       : undefined
   }

@@ -2,13 +2,13 @@
 
 @font-face {
   font-family: ABCSyntMono;
-  src: url('/fonts/ABCSyntMono-Regular-Trial.woff2') format('woff2'),
-       url('/fonts/ABCSyntMono-Regular-Trial.woff') format('woff');
+  src: url('/fonts/ABCSyntMono-Regular.woff2') format('woff2'),
+       url('/fonts/ABCSyntMono-Regular.woff') format('woff');
 }
 
 .slide-top-lg {
-	-webkit-animation: slide-top-lg 1s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
-	        animation: slide-top-lg 1s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
+	-webkit-animation: slide-top-lg  both;
+	        animation: slide-top-lg  both;
 }
 
  @-webkit-keyframes slide-top-lg {
@@ -33,8 +33,8 @@
 }
 
 .slide-top-sm {
-	-webkit-animation: slide-top-sm 1s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
-	        animation: slide-top-sm 1s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
+	-webkit-animation: slide-top-sm both;
+	        animation: slide-top-sm  both;
 }
 
  @-webkit-keyframes slide-top-sm {
@@ -59,8 +59,8 @@
 }
 
 .slide-bottom-lg {
-	-webkit-animation: slide-bottom-lg 1s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
-	        animation: slide-bottom-lg 1s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
+	-webkit-animation: slide-bottom-lg both;
+	        animation: slide-bottom-lg both;
 }
 
  @-webkit-keyframes slide-bottom-lg {
@@ -85,8 +85,8 @@
 }
 
 .slide-bottom-sm {
-	-webkit-animation: slide-bottom-sm 1s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
-	        animation: slide-bottom-sm 1s cubic-bezier(0.230, 1.000, 0.320, 1.000) both;
+	-webkit-animation: slide-bottom-sm both;
+	        animation: slide-bottom-sm both;
 }
 
  @-webkit-keyframes slide-bottom-sm {

@@ -39,7 +39,8 @@ export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc:
         src,
         x: 0,
         y: 0,
-        rot: Math.random() * 45 - 10,
+        rot: Math.random() * 160 - 80,
+        scale: Math.random() * 0.4 + 0.8,
       }))
     );
   }, []);
@@ -51,7 +52,8 @@ export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc:
         ...it,
         x: 0,
         y: 0,
-        rot: Math.random() * 45 - 10,
+        rot: Math.random() * 160 - 80,
+        scale: Math.random() * 0.4 + 0.8,
       }));
     });
   }, []);
@@ -91,7 +93,7 @@ export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc:
   }, [nowArea]);
 
   return (
-    <div className={` h-svh w-full flex justify-center items-center relative overflow-hidden transition-opacity duration-300`}>
+    <div className={` h-svh w-full flex justify-center items-center relative overflow-hidden `}>
 <div className="absolute top-0 left-0 z-[47] w-full bg-white pt-[10px] pb-[31px]">
   {/* 가운데 고정 */}
   <div className="absolute left-1/2 -translate-x-1/2 flex items-center space-x-[5vw]">
@@ -125,8 +127,8 @@ export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc:
       
       style={{
     opacity: portraitMode !== "" ? 0 : 1,
-    transition: "opacity 400ms ease",
-    willChange: "opacity",
+    transition: "",
+    willChange: "",
     pointerEvents: portraitMode !== "" ? "none" : "auto",
   }}>
         {  items.map((it) => (
@@ -134,8 +136,7 @@ export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc:
             key={it.id}
             item={it}
             onDrag={onDrag}
-          className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[32vw] md:w-[20vw]
-          transition-[filter] duration-300
+          className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[32vw] md:w-[25vw]
           
         `}
 
@@ -147,7 +148,6 @@ export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc:
       <div
         className={`
           absolute left-0 bottom-0 w-full h-svh z-40
-          transition-transform duration-700 ease-in-out
           ${portraitOpen ? "translate-y-0" : "translate-y-full pointer-events-none"}
         `}
       >

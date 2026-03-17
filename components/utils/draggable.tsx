@@ -2,7 +2,7 @@
 
 import { memo, useEffect, useRef, useState } from "react";
 
-type DraggableItem = { id: number; src: string; x: number; y: number; rot: number; };
+type DraggableItem = { id: number; src: string; x: number; y: number; rot: number; scale: number };
 
 type Props = {
   item: DraggableItem;
@@ -30,7 +30,7 @@ function DraggableImage({ item, onDrag, className = "" }: Props) {
   const applyTransform = (x: number, y: number) => {
     const el = ref.current;
     if (!el) return;
-    el.style.transform = `translate(${x}px, ${y}px) rotate(${item.rot}deg)`;
+    el.style.transform = `translate(${x}px, ${y}px) rotate(${item.rot}deg) scale(${item.scale})`;
   };
 
   return (
@@ -40,16 +40,15 @@ function DraggableImage({ item, onDrag, className = "" }: Props) {
       loading="eager"
       draggable={false}
       className={`
-      transition-[filter] duration-300
       ${pressed
-        ? "invert hue-rotate-180"
-        : "hover:invert hover:hue-rotate-180"}
+        ? "invert hue-rotate-180 hover:border-[1px] hover:border-white"
+        : "hover:invert hover:hue-rotate-180 hover:border-[1px] hover:border-white "}
       cursor-grab active:cursor-grabbing
       select-none touch-none
       ${className}
     `}
       style={{
-        transform: `translate(${live.current.x}px, ${live.current.y}px) rotate(${item.rot}deg)`,
+  transform: `translate(${live.current.x}px, ${live.current.y}px) rotate(${item.rot}deg) scale(${item.scale})`,
         willChange: "transform",
       }}
       onPointerDown={(e) => {

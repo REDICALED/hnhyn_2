@@ -58,7 +58,7 @@ export default function PortraitMasonry({
                     draggable={false}
                     className={`
                       w-full h-auto block select-none cursor-pointer
-                      transition-[filter] duration-700
+                      
                       ${ready ? "" : "invert grayscale-100"}
                     `}
                     style={{ borderRadius: 1 }}
@@ -68,7 +68,6 @@ export default function PortraitMasonry({
                   className="
                       absolute inset-0 flex items-center justify-center
                       opacity-0 group-hover:opacity-100
-                      transition-opacity duration-300
                       backdrop-invert backdrop-grayscale
                       text-white mix-blend-difference
                     "

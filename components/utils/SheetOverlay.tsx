@@ -56,7 +56,6 @@ export default function SheetOverlay({
         className={`
           absolute left-0 right-0 bottom-0 bg-white
           transform-gpu will-change-transform
-          transition-transform duration-[700ms] [transition-timing-function:cubic-bezier(0.230,1.000,0.320,1.000)]
           ${open ? "translate-y-0" : "translate-y-full"}
         `}
         style={{ height: "calc(100svh - 31px)" }}
@@ -65,9 +64,8 @@ export default function SheetOverlay({
         <div
           className={`
             h-full overflow-y-auto transform-gpu
-            transition-[transform,opacity] duration-[180ms] ease-out
             ${open
-              ? "opacity-100 translate-y-0 delay-[700ms]"
+              ? "opacity-100 translate-y-0 "
               : "opacity-0 translate-y-2 delay-0"
             }
           `}
