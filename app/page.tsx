@@ -65,7 +65,7 @@ export default function Page() {
 
     <button
       onClick={() => (window.location.href = '/')}
-      className="fixed bottom-6 right-6 z-50 cursor-pointer"
+      className="fixed bottom-6 right-16 z-50 cursor-pointer"
     >
       <img src="/Logo_Main.svg" alt="Home" className="w-32" />
     </button>
