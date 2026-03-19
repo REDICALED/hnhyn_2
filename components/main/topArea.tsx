@@ -10,11 +10,7 @@ export default function topArea() {
   return (
     <>
     { nowArea != 'middleArea' ? <div></div> : <div
-    onClick={() => {
-      if(nowArea === "topArea") return;
-          setBeforeArea(nowArea);
-          setNowArea("topArea");
-        }}     
+  
     className={` 
     ${nowArea != 'middleArea' ? 'h-[31px] py-1 border-y' : 'h-[calc(45svh+1px)] border-b'}
     w-full   border-black  z-49
