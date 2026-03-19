@@ -1,4 +1,3 @@
-// components/commercial/CommercialMain.tsx
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -6,13 +5,22 @@ import { useNowArea } from "@/stores/nowArea";
 import { useBeforeArea } from "@/stores/beforeArea";
 import DraggableImage, { type DraggableItem } from "@/components/utils/draggable";
 import dynamic from "next/dynamic";
-import { AnimatePresence, motion } from "framer-motion";
 import SheetOverlay from "@/components/utils/SheetOverlay";
 import ModeButton from "@/components/ui/modeButton";
+import type { SelectedWork } from "@/components/commercial/commercialList";
 
-const PortraitMasonry = dynamic(() => import("@/components/commercial/commercialList"), {
-  ssr: false,
-});
+type CommercialListProps = {
+  portraitOpen: boolean;
+  activeSrc: string | null;
+  onSelect: (work: SelectedWork) => void;
+  category?: "portrait" | "non_portrait";
+};
+
+const PortraitMasonry = dynamic<CommercialListProps>(
+  () => import("@/components/commercial/commercialList"),
+  { ssr: false }
+);
+
 const FILES = [
   "/commercial/1.jpg",
   "/commercial/2.jpg",
@@ -21,16 +29,51 @@ const FILES = [
   "/commercial/5.jpg",
   "/commercial/6.jpg",
   "/commercial/7.jpg",
+  "/commercial/8.jpg",
+  "/commercial/9.jpg",
+  "/commercial/10.jpg",
 ];
 
-export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc: string | null; setActiveSrc: (src: string | null) => void } ) {
+function getWorkMeta(work: SelectedWork | null) {
+  if (!work) {
+    return {
+      route: "",
+      title: "",
+      description: "",
+    };
+  }
+
+  const slug = work.slug.toLowerCase();
+
+  // 25_tony / 25tony 둘 다 대응
+  const match = slug.match(/^(\d{2})_?(.+)?$/);
+
+  const year = match ? `20${match[1]}` : "";
+  const name = match && match[2]
+    ? match[2].replace(/_/g, "").toUpperCase()
+    : "";
+
+  return {
+    route: `: COMMERCIAL / ${work.category.toUpperCase()} / ${year}_${name}`,
+    title: `${name}, ${year}`,
+    description: "",
+  };
+}
+
+export default function CommercialMain({
+  activeWork,
+  setActiveWork,
+}: {
+  activeWork: SelectedWork | null;
+  setActiveWork: (work: SelectedWork | null) => void;
+}) {
   const { nowArea } = useNowArea();
   const { beforeArea } = useBeforeArea();
 
   const [items, setItems] = useState<DraggableItem[]>([]);
   const [portraitOpen, setPortraitOpen] = useState(false);
   const openAfterEnterRef = useRef(false);
-  const [portraitMode, setPortraitMode] = useState("");
+  const [portraitMode, setPortraitMode] = useState<"portrait" | "non_portrait" | "">("");
 
   useEffect(() => {
     setItems(
@@ -59,8 +102,6 @@ export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc:
   }, []);
 
   useEffect(() => {
-    // 페이지 전환으로 CommercialMain이 들어올 때(원하시면 여기 타이밍에 맞춰 열리도록)
-    // bottom -> top 이동 케이스는 기존 로직 유지
     if (beforeArea === "bottomArea" && nowArea === "topArea") {
       const t = setTimeout(resetPositions, 500);
       return () => clearTimeout(t);
@@ -74,17 +115,17 @@ export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc:
     );
   }, []);
 
-  const openPortrait = () => {
-    // CommercialMain이 이미 떠 있는 상태라면 바로 열림
-    // 만약 nowArea 전환 직후에 누를 수 있다면, 아래 플래그로 딜레이 오픈도 가능
+  const openPortrait = (mode: "portrait" | "non_portrait") => {
+    setPortraitMode(mode);
+
     if (nowArea === "bottomArea") {
       setPortraitOpen(true);
       return;
     }
+
     openAfterEnterRef.current = true;
   };
 
-  // CommercialMain이 화면에 올라온 뒤에 자동 오픈(필요 없으면 이 useEffect 삭제)
   useEffect(() => {
     if (nowArea === "bottomArea" && openAfterEnterRef.current) {
       openAfterEnterRef.current = false;
@@ -92,59 +133,50 @@ export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc:
     }
   }, [nowArea]);
 
+  const activeTitleSrc =
+    activeWork?.images.find((img) => img.type === "title")?.url || null;
+    const { route, title, description } = getWorkMeta(activeWork);
+
   return (
-    <div className={` h-svh w-full flex justify-center items-center relative overflow-hidden `}>
-<div className="absolute top-0 left-0 z-[47] w-full bg-white pt-[10px] pb-[31px]">
-  {/* 가운데 고정 */}
-  <div className="absolute left-1/2 -translate-x-1/2 flex items-center space-x-[5vw]">
-    <button
-      onClick={() => {
-        setPortraitMode("portrait");
-        openPortrait();
-      }}
-      className="cursor-pointer pl-[40px]"
-    >
-      Portrait
-    </button>
+    <div className="h-svh w-full flex justify-center items-center relative overflow-hidden">
+      <div className="absolute top-0 left-0 z-[9999] bg-white w-full pt-[10px] pb-[31px] ">
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center space-x-[5vw]">
+          <button
+            onClick={() => openPortrait("portrait")}
+            className="cursor-pointer pl-[40px]"
+          >
+            Portrait
+          </button>
 
-    <button
-      onClick={() => {
-        setPortraitMode("portrait");
-        setPortraitOpen(false);
-      }}
-      className="cursor-pointer"
-    >
-      Non_Portrait
-    </button>
-  </div>
+          <button
+            onClick={() => openPortrait("non_portrait")}
+            className="cursor-pointer"
+          >
+            Non_Portrait
+          </button>
+        </div>
 
-  {/* 오른쪽 고정 */}
-      <ModeButton />
-</div>
+        <ModeButton />
+      </div>
 
-      {/* draggable 이미지들 */}
       <div
-      
-      style={{
-    opacity: portraitMode !== "" ? 0 : 1,
-    transition: "",
-    willChange: "",
-    pointerEvents: portraitMode !== "" ? "none" : "auto",
-  }}>
-        {  items.map((it) => (
+        style={{
+          opacity: portraitMode !== "" ? 0 : 1,
+          transition: "",
+          willChange: "",
+          pointerEvents: portraitMode !== "" ? "none" : "auto",
+        }}
+      >
+        {items.map((it) => (
           <DraggableImage
             key={it.id}
             item={it}
             onDrag={onDrag}
-          className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[32vw] md:w-[25vw]
-          
-        `}
-
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[32vw] md:w-[25vw]"
           />
         ))}
       </div>
 
-      {/* masonry 패널: 아래 -> 위 */}
       <div
         className={`
           absolute left-0 bottom-0 w-full h-svh z-40
@@ -152,38 +184,42 @@ export default function CommercialMain( {activeSrc, setActiveSrc }: { activeSrc:
         `}
       >
         <PortraitMasonry
-      portraitOpen={portraitOpen}
-      activeSrc={activeSrc}
-      onSelect={(src) => setActiveSrc(src)}
-    />
-      </div>
-      <SheetOverlay
-    open={activeSrc !== null}
-    onClose={() => setActiveSrc(null)}
-    route=": COMMERCIAL / 1PORTRAIT / 17_GAYOUNG"
-    title="TITLE, 2025"
-    description={`TEXT.\nI WORK ON PHOTOGRAPHY BASED IN SEOUL. THEY TRY TO RECOGNIZE THE SURROUNDING BEINGS THAT MAKE
-THINGS HAPPEN, BUT THEY DON'T SEE WELL CHANGE THE CONDITIONS TO EXPLORE NEW POSSIBILITIES.
-SOMETIMES THESE INTERESTS TOUCH VISUAL AND PHOTOGRAPHY SOMETIMES IT TOUCHES THE NUMEROUS 
-`}
-  >
-    {activeSrc && (
-      <div className="flex justify-center items-center py-6">
-        <img
-          src={activeSrc}
-          style={{ maxWidth: "80vw",
-          maxHeight: "70vh",
-          }}
-          className="h-auto object-contain"
-          draggable={false}
+          portraitOpen={portraitOpen}
+          activeSrc={activeTitleSrc}
+          onSelect={(work) => setActiveWork(work)}
+          category={portraitMode === "non_portrait" ? "non_portrait" : "portrait"}
         />
-        
       </div>
-    )}
 
-    <div className="px-4 pb-10">
-    </div>
-</SheetOverlay>
+      <SheetOverlay
+        open={activeWork !== null}
+        onClose={() => setActiveWork(null)}
+        route={route}
+        title={title}
+        description={description}
+      >
+        {activeWork && (
+          <div className="flex flex-col gap-[6px] py-6">
+            {[...activeWork.images]
+              .sort((a, b) => a.order - b.order)
+              .map((img) => (
+                <div key={img.key} className="flex justify-center items-center">
+                  <img
+                    src={img.url}
+                    style={{
+                      maxWidth: "80vw",
+                      maxHeight: "70vh",
+                    }}
+                    className="h-auto object-contain"
+                    draggable={false}
+                  />
+                </div>
+              ))}
+          </div>
+        )}
+
+        <div className="px-4 pb-10" />
+      </SheetOverlay>
     </div>
   );
 }

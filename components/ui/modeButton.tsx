@@ -5,7 +5,7 @@ export default function modeButton() {
         aria-hidden
         className="inline-block w-[8px] h-[8px] rounded-full bg-red-500"
       />
-      EN / KR
+      On / Off
     </button>
   );
 }

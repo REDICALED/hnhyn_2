@@ -1,37 +1,27 @@
+'use client';
 
 import { useBeforeArea } from "@/stores/beforeArea";
 import { useNowArea } from "@/stores/nowArea"
 
-export default function topArea( {activeSrc, setActiveSrc }: { activeSrc: string | null; setActiveSrc: (src: string | null) => void } ) {
+export default function topArea() {
   const { nowArea, setNowArea } = useNowArea();
   const { beforeArea, setBeforeArea } = useBeforeArea();
 
   return (
-    <div
+    <>
+    { nowArea != 'middleArea' ? <div></div> : <div
     onClick={() => {
       if(nowArea === "topArea") return;
           setBeforeArea(nowArea);
           setNowArea("topArea");
-        }}
-          
+        }}     
     className={` 
     ${nowArea != 'middleArea' ? 'h-[31px] py-1 border-y' : 'h-[calc(45svh+1px)] border-b'}
-    ${ ( !activeSrc && beforeArea === 'middleArea' && nowArea === 'bottomArea') ? 'slide-bottom-sm' : ''}
-    ${ ( !activeSrc && beforeArea === 'middleArea' && nowArea === 'topArea') ? 'slide-top-sm' : ''}
-    ${ ( !activeSrc && beforeArea === 'bottomArea' && nowArea === 'topArea') ? 'slide-top-lg' : ''}
-    ${ ( !activeSrc && beforeArea === 'topArea' && nowArea === 'bottomArea') ? 'slide-bottom-lg' : ''}
-    ${activeSrc ? 'slide-top-lg' : 'translate-y-0'}
-
     w-full   border-black  z-49
     cursor-pointer `}
-    style={
-    activeSrc
-      ? {
-        }
-      : undefined
-  }
     >
       <div className="h-full w-full flex justify-center items-center">Personal</div>
-    </div>
+    </div>}
+    </>
     );
 }

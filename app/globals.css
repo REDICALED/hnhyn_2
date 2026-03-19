@@ -2,8 +2,8 @@
 
 @font-face {
   font-family: ABCSyntMono;
-  src: url('/fonts/ABCSyntMono-Regular.woff2') format('woff2'),
-       url('/fonts/ABCSyntMono-Regular.woff') format('woff');
+  src: url('https://cdnhnhyn.aggingkobe.com/ABCSyntMono-Regular.woff2?v=2') format('woff2'),
+       url('https://cdnhnhyn.aggingkobe.com/ABCSyntMono-Regular.woff?v=2') format('woff');
 }
 
 .slide-top-lg {

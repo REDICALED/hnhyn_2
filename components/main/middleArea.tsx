@@ -12,7 +12,7 @@ export default function middleArea() {
             </div>
 
             <div className=" w-2/3 break-all pl-[50px] ">
-              I work on photography based in Seoul. They try to recognize the surrounding beings that make things happen, but they don't see well. Change the conditions to explore new possibilities. Sometimes these interests touch visual and photography, sometimes they touch the numerous directions that you have experienced, such as narrative and fashion.
+              Based in Seoul, I use photography to explore how seemingly solid identities erode and shift. I try to capture this through a sense of materiality, focusing on physical textures and the way light—whether soft, harsh, or shifting in direction—redefines what we see. By centering my work on the body, narrative, 'wearing' (the act of putting on clothes or even other beings), and 'merging' (the blurring of boundaries between self and other), I aim to create without being tied down by genre.
             </div>     
 
             <div className="w-1/6 relative">

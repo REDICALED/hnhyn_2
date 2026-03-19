@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-
 import { useManifest, type ManifestImage } from "@/stores/manifest";
 
 export type SelectedWork = {
@@ -86,40 +85,40 @@ function LazyMasonryImage({
   );
 }
 
-export default function PortraitMasonry({
-  portraitOpen,
+export default function PersonalMasonry({
+  mainOpen,
   activeSrc,
   onSelect,
-  category = "portrait",
+  category = "main",
 }: {
-  portraitOpen: boolean;
+  mainOpen: boolean;
   activeSrc: string | null;
   onSelect: (work: SelectedWork) => void;
-  category?: "portrait" | "non_portrait";
+  category?: "main" | "extra";
 }) {
   const [ready, setReady] = useState(false);
   const manifest = useManifest((s) => s.manifest);
-const fetchManifest = useManifest((s) => s.fetchManifest);
+  const fetchManifest = useManifest((s) => s.fetchManifest);
   const [visibleCount, setVisibleCount] = useState(12);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!portraitOpen) {
+    if (!mainOpen) {
       setReady(false);
       return;
     }
 
     const t = setTimeout(() => setReady(true), 700);
     return () => clearTimeout(t);
-  }, [portraitOpen]);
+  }, [mainOpen]);
 
- useEffect(() => {
-  fetchManifest();
-}, [fetchManifest]);
+  useEffect(() => {
+    fetchManifest();
+  }, [fetchManifest]);
 
   useEffect(() => {
     setVisibleCount(12);
-  }, [category, portraitOpen]);
+  }, [category, mainOpen]);
 
   const allFiles = useMemo<FileItem[]>(() => {
     if (!manifest) return [];
@@ -140,7 +139,9 @@ const fetchManifest = useManifest((s) => s.fetchManifest);
       .filter((item): item is FileItem => item !== null);
   }, [manifest, category]);
 
-  const files = useMemo(() => allFiles.slice(0, visibleCount), [allFiles, visibleCount]);
+  const files = useMemo(() => {
+    return allFiles.slice(0, visibleCount);
+  }, [allFiles, visibleCount]);
 
   useEffect(() => {
     const el = loadMoreRef.current;
@@ -184,23 +185,21 @@ const fetchManifest = useManifest((s) => s.fetchManifest);
                     isActive={isActive}
                   />
 
-
-
-                      <div
-                        className="
-                          absolute top-0 left-0 w-full h-full
-                          flex items-center justify-center
-                          opacity-0 group-hover:opacity-100
-                          backdrop-invert backdrop-grayscale
-                          text-white mix-blend-difference
-                          [-webkit-text-stroke:0.2px_black]
-                          pointer-events-none
-                        "
-                      >
-                        <div className="px-2 text-center break-all">
-                          {fileName}
-                        </div>
-                      </div>
+                  <div
+                    className="
+                      absolute top-0 left-0 w-full h-full
+                      flex items-center justify-center
+                      opacity-0 group-hover:opacity-100
+                      backdrop-invert backdrop-grayscale
+                      text-white mix-blend-difference
+                      [-webkit-text-stroke:0.2px_black]
+                      pointer-events-none
+                    "
+                  >
+                    <div className="px-2 text-center break-all">
+                      {fileName}
+                    </div>
+                  </div>
                 </div>
               );
             })}
