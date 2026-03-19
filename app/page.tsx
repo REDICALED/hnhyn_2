@@ -31,13 +31,13 @@ export default function Page() {
       </div>
         }
 
-      <div className="absolute inset-0 flex items-center justify-center  ">
+      { nowArea != 'middleArea'  ? null : <div className="absolute inset-0 flex items-center justify-center  ">
         <div
           className="w-[20vw] aspect-square pointer-events-auto z-[9999]"
           onMouseEnter={() => setLogoHover(true)}
           onMouseLeave={() => setLogoHover(false)}
         />
-      </div>
+      </div>}
       
       <div className="relative flex flex-col justify-center min-h-svh ">
         
