@@ -8,7 +8,7 @@ export type SelectedWork = {
   slug: string;
   category: "portrait" | "non_portrait" | "main" | "extra";
   images: ManifestImage[];
-  description: string;
+  description?: string;
 };
 
 type FileItem = {
