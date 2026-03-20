@@ -12,6 +12,7 @@ export type ManifestWork = {
   cover: string | null;
   coverUrl: string | null;
   images: ManifestImage[];
+  description?: string;
 };
 
 export type Manifest = {
