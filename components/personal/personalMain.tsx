@@ -173,8 +173,8 @@ const onMoveEnd = useCallback((id: number, nextX: number, nextY: number) => {
 
       <div
   style={{
-    opacity: portraitMode !== "" ? 0 : 1,
-    pointerEvents: portraitMode !== "" ? "none" : "auto",
+    opacity: mainMode !== "" ? 0 : 1,
+    pointerEvents: mainMode !== "" ? "none" : "auto",
   }}
 >
   {items.map((it) => (
