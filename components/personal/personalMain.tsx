@@ -73,31 +73,34 @@ export default function PersonalMain({
   const openAfterEnterRef = useRef(false);
   const [mainMode, setMainMode] = useState<"main" | "extra" | "">("");
 
-  useEffect(() => {
-    setItems(
-      FILES.map((src, i) => ({
-        id: i,
-        src,
-        x: 0,
-        y: 0,
-        rot: Math.random() * 160 - 80,
-        scale: Math.random() * 0.4 + 0.8,
-      }))
-    );
-  }, []);
+useEffect(() => {
+  setItems(
+    FILES.map((src, i) => ({
+      id: i,
+      src,
+      x: 0,
+      y: 0,
+      rot: Math.random() * 160 - 80,
+      scale: Math.random() * 0.4 + 0.8,
+      z: i + 1,
+    }))
+  );
+}, []);
 
   const resetPositions = useCallback(() => {
-    setItems((prev) => {
-      const shuffled = [...prev].sort(() => Math.random() - 0.5);
-      return shuffled.map((it) => ({
-        ...it,
-        x: 0,
-        y: 0,
-        rot: Math.random() * 160 - 80,
-        scale: Math.random() * 0.4 + 0.8,
-      }));
-    });
-  }, []);
+  setItems((prev) => {
+    const shuffled = [...prev].sort(() => Math.random() - 0.5);
+
+    return shuffled.map((it, index) => ({
+      ...it,
+      x: 0,
+      y: 0,
+      rot: Math.random() * 160 - 80,
+      scale: Math.random() * 0.4 + 0.8,
+      z: index + 1,
+    }));
+  });
+}, []);
 
   useEffect(() => {
     if (beforeArea === "topArea" && nowArea === "bottomArea") {
@@ -107,12 +110,22 @@ export default function PersonalMain({
     resetPositions();
   }, [nowArea, beforeArea, resetPositions]);
 
-  const onDrag = useCallback((id: number, dx: number, dy: number) => {
-    setItems((prev) =>
-      prev.map((it) => (it.id === id ? { ...it, x: it.x + dx, y: it.y + dy } : it))
+  const bringToFront = useCallback((id: number) => {
+  setItems((prev) => {
+    const maxZ = Math.max(0, ...prev.map((it) => it.z));
+    return prev.map((it) =>
+      it.id === id ? { ...it, z: maxZ + 1 } : it
     );
-  }, []);
+  });
+}, []);
 
+const onMoveEnd = useCallback((id: number, nextX: number, nextY: number) => {
+  setItems((prev) =>
+    prev.map((it) =>
+      it.id === id ? { ...it, x: nextX, y: nextY } : it
+    )
+  );
+}, []);
   const openMain = (mode: "main" | "extra") => {
     setMainMode(mode);
 
@@ -159,22 +172,21 @@ export default function PersonalMain({
       </div>
 
       <div
-        style={{
-          opacity: mainMode !== "" ? 0 : 1,
-          transition: "",
-          willChange: "",
-          pointerEvents: mainMode !== "" ? "none" : "auto",
-        }}
-      >
-        {items.map((it) => (
-          <DraggableImage
-            key={it.id}
-            item={it}
-            onDrag={onDrag}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[32vw] md:w-[25vw]"
-          />
-        ))}
-      </div>
+  style={{
+    opacity: portraitMode !== "" ? 0 : 1,
+    pointerEvents: portraitMode !== "" ? "none" : "auto",
+  }}
+>
+  {items.map((it) => (
+    <DraggableImage
+      key={it.id}
+      item={it}
+      onMoveEnd={onMoveEnd}
+      onBringToFront={bringToFront}
+      className="w-[32vw] md:w-[25vw]"
+    />
+  ))}
+</div>
 
       <div
         className={`
