@@ -177,14 +177,14 @@ export default function PersonalMasonry({
                 <div
                   key={slug}
                   className="relative group cursor-pointer"
-                  onClick={() => onSelect({ slug, category, images })}
+                  onClick={() => onSelect({ slug, category, images, description })}
                 >
                   <LazyMasonryImage
                     src={src}
                     alt={fileName}
                     ready={ready}
                     isActive={isActive}
-                    description: "설명 테스트",
+                    description: {description},
                   />
 
                   <div
