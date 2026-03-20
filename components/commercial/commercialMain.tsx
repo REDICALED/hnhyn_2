@@ -174,22 +174,21 @@ const onMoveEnd = useCallback((id: number, nextX: number, nextY: number) => {
       </div>
 
       <div
-        style={{
-          opacity: portraitMode !== "" ? 0 : 1,
-          transition: "",
-          willChange: "",
-          pointerEvents: portraitMode !== "" ? "none" : "auto",
-        }}
-      >
-        {items.map((it) => (
-          <DraggableImage
-            key={it.id}
-            item={it}
-            onDrag={onDrag}
-            className=" w-[32vw] md:w-[25vw]"
-          />
-        ))}
-      </div>
+  style={{
+    opacity: portraitMode !== "" ? 0 : 1,
+    pointerEvents: portraitMode !== "" ? "none" : "auto",
+  }}
+>
+  {items.map((it) => (
+    <DraggableImage
+      key={it.id}
+      item={it}
+      onMoveEnd={onMoveEnd}
+      onBringToFront={bringToFront}
+      className="w-[32vw] md:w-[25vw]"
+    />
+  ))}
+</div>
 
       <div
         className={`
