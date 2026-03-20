@@ -53,7 +53,11 @@ function LazyMasonryImage({
   }, []);
 
   return (
-    <div ref={wrapRef} className="w-full" style={{ minHeight: "12rem" }}>
+    <div
+      ref={wrapRef}
+      className="w-full"
+      style={{ minHeight: "12rem", borderRadius: 1, overflow: "hidden" }}
+    >
       {shouldLoad ? (
         <img
           src={src}
@@ -62,14 +66,22 @@ function LazyMasonryImage({
           draggable={false}
           onLoad={() => setLoaded(true)}
           className={`
-            w-full h-auto block cursor-pointer transition-opacity duration-100
+            w-full h-auto block select-none cursor-pointer transition-opacity duration-100
             ${ready ? "" : "invert grayscale-100"}
             ${isActive ? "opacity-100" : ""}
             ${loaded ? "opacity-100" : "opacity-0"}
           `}
+          style={{ borderRadius: 1 }}
         />
       ) : (
-        <div className="w-full bg-[#efefef]" style={{ minHeight: "12rem" }} />
+        <div
+          className={`w-full ${ready ? "" : "invert grayscale-100"}`}
+          style={{
+            minHeight: "12rem",
+            borderRadius: 1,
+            backgroundColor: "#efefef",
+          }}
+        />
       )}
     </div>
   );
@@ -97,6 +109,7 @@ export default function PersonalMasonry({
       setReady(false);
       return;
     }
+
     const t = setTimeout(() => setReady(true), 700);
     return () => clearTimeout(t);
   }, [mainOpen]);
@@ -112,21 +125,22 @@ export default function PersonalMasonry({
   const allFiles = useMemo<FileItem[]>(() => {
     if (!manifest) return [];
 
-    return (manifest[category] || [])
+    return [...(manifest[category] || [])]
       .reverse()
-      .map((work) => {
+      .flatMap((work) => {
         const titleImage = work.images.find((img) => img.type === "title");
-        if (!titleImage) return null;
+        if (!titleImage) return [];
 
-        return {
-          src: titleImage.url,
-          fileName: titleImage.key,
-          slug: work.slug,
-          images: work.images,
-          description: work.description, // 핵심
-        };
-      })
-      .filter((item): item is FileItem => item !== null);
+        return [
+          {
+            src: titleImage.url,
+            fileName: titleImage.key,
+            slug: work.slug,
+            images: work.images,
+            description: work.description,
+          },
+        ];
+      });
   }, [manifest, category]);
 
   const files = useMemo(() => {
@@ -152,37 +166,54 @@ export default function PersonalMasonry({
   }, [files.length, allFiles.length]);
 
   return (
-    <div className="w-full h-full overflow-y-auto pt-[41px] px-[40px]">
-      <ResponsiveMasonry
-        columnsCountBreakPoints={{ 0: 2, 768: 3, 1024: 4 }}
-      >
-        <Masonry>
-          {files.map(({ src, fileName, slug, images, description }) => {
-            const isActive = activeSrc === src;
+    <div className="w-full h-full overflow-y-auto overscroll-contain pt-[41px] px-[40px] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="pb-[16px]">
+        <ResponsiveMasonry
+          columnsCountBreakPoints={{ 0: 2, 768: 3, 1024: 4 }}
+          gutterBreakPoints={{ 0: "2px", 768: "4px", 1024: "6px" }}
+        >
+          <Masonry style={{ justifyContent: "center" }}>
+            {files.map(({ src, fileName, slug, images, description }) => {
+              const isActive = activeSrc === src;
 
-            return (
-              <div
-                key={slug}
-                className="relative cursor-pointer"
-                onClick={() =>
-                  onSelect({ slug, category, images, description })
-                }
-              >
-                <LazyMasonryImage
-                  src={src}
-                  alt={fileName}
-                  ready={ready}
-                  isActive={isActive}
-                />
-              </div>
-            );
-          })}
-        </Masonry>
-      </ResponsiveMasonry>
+              return (
+                <div
+                  key={slug}
+                  className="relative group cursor-pointer"
+                  onClick={() => onSelect({ slug, category, images, description })}
+                >
+                  <LazyMasonryImage
+                    src={src}
+                    alt={fileName}
+                    ready={ready}
+                    isActive={isActive}
+                  />
 
-      {files.length < allFiles.length && (
-        <div ref={loadMoreRef} className="h-[1px]" />
-      )}
+                  <div
+                    className="
+                      absolute top-0 left-0 w-full h-full
+                      flex items-center justify-center
+                      opacity-0 group-hover:opacity-100
+                      backdrop-invert backdrop-grayscale
+                      text-white mix-blend-difference
+                      [-webkit-text-stroke:0.2px_black]
+                      pointer-events-none
+                    "
+                  >
+                    <div className="px-2 text-center break-all">
+                      {fileName}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </Masonry>
+        </ResponsiveMasonry>
+
+        {files.length < allFiles.length && (
+          <div ref={loadMoreRef} className="h-[1px] w-full" />
+        )}
+      </div>
     </div>
   );
 }
