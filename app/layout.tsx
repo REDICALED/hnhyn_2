@@ -16,11 +16,14 @@ export default function RootLayout({
   return (
 <html lang="en">
 <head>
-<link rel="stylesheet" href="https://use.typekit.net/ach3hzm.css" />
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+/>
 </head>
 <body
 className="h-[100dvh] pb-[env(safe-area-inset-bottom)] leading-[1.2]"
-style={{ fontFamily: '"ABCSyntMono", monospace' }}>
+style={{ fontFamily: '"ABCSyntMono", "pretendard", monospace' }}>
 <div>
 <VerticalLineLeft />
 <VerticalLineRight />
