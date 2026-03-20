@@ -2,162 +2,106 @@
 
 import { memo, useEffect, useRef, useState } from "react";
 
-export type DraggableItem = {
-  id: number;
-  src: string;
-  x: number;
-  y: number;
-  rot: number;
-  scale: number;
-  z: number;
-};
+type DraggableItem = { id: number; src: string; x: number; y: number; rot: number; scale: number };
 
 type Props = {
   item: DraggableItem;
-  onMoveEnd: (id: number, nextX: number, nextY: number) => void;
-  onBringToFront: (id: number) => void;
+  onDrag: (id: number, dx: number, dy: number) => void;
   className?: string;
 };
 
-type DragInfo = {
-  pointerId: number;
-  startX: number;
-  startY: number;
-  originX: number;
-  originY: number;
-};
+function DraggableImage({ item, onDrag, className = "" }: Props) {
+  const ref = useRef<HTMLImageElement>(null);
 
-function DraggableImage({
-  item,
-  onMoveEnd,
-  onBringToFront,
-  className = "",
-}: Props) {
-  const [pos, setPos] = useState({ x: item.x, y: item.y });
-  const [dragging, setDragging] = useState(false);
+  const start = useRef<{ x: number; y: number } | null>(null);
+  const base = useRef<{ x: number; y: number }>({ x: item.x, y: item.y }); // 드래그 시작 시 기준
+  const live = useRef<{ x: number; y: number }>({ x: item.x, y: item.y }); // 드래그 중 실시간 좌표
 
-  const posRef = useRef({ x: item.x, y: item.y });
-  const dragRef = useRef<DragInfo | null>(null);
+  const [pressed, setPressed] = useState(false);
 
+  // 외부에서 item.x/y가 바뀌면 live도 동기화
   useEffect(() => {
-    if (dragRef.current) return;
+    if (!pressed) {
+      live.current = { x: item.x, y: item.y };
+      base.current = { x: item.x, y: item.y };
+    }
+  }, [item.x, item.y, pressed]);
 
-    const next = { x: item.x, y: item.y };
-    posRef.current = next;
-    setPos(next);
-  }, [item.x, item.y]);
-
-  const setLivePos = (next: { x: number; y: number }) => {
-    posRef.current = next;
-    setPos(next);
-  };
-
-  const getNextPos = (clientX: number, clientY: number) => {
-    const drag = dragRef.current;
-    if (!drag) return posRef.current;
-
-    return {
-      x: drag.originX + (clientX - drag.startX),
-      y: drag.originY + (clientY - drag.startY),
-    };
+  const applyTransform = (x: number, y: number) => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.transform = `translate(${x}px, ${y}px) rotate(${item.rot}deg) scale(${item.scale})`;
   };
 
   return (
-    <div
-      className="absolute left-1/2 top-1/2"
+    <img
+      ref={ref}
+      src={item.src}
+      loading="eager"
+      draggable={false}
+      className={`
+      ${pressed
+        ? "invert hue-rotate-180 hover:border-[1px] hover:border-white"
+        : "hover:invert hover:hue-rotate-180 hover:border-[1px] hover:border-white "}
+      cursor-grab active:cursor-grabbing
+      select-none touch-none
+      ${className}
+    `}
       style={{
-        transform: `translate3d(${pos.x}px, ${pos.y}px, 0)`,
-        zIndex: item.z,
-        willChange: dragging ? "transform" : undefined,
+  transform: `translate(${live.current.x}px, ${live.current.y}px) rotate(${item.rot}deg) scale(${item.scale})`,
+        willChange: "transform",
       }}
-    >
-      <img
-        src={item.src}
-        alt=""
-        draggable={false}
-        className={`
-          absolute left-0 top-0 block
-          select-none touch-none
-          cursor-grab active:cursor-grabbing
-          ${
-            dragging
-              ? "invert hue-rotate-180 outline outline-1 outline-white"
-              : "hover:invert hover:hue-rotate-180 hover:outline hover:outline-1 hover:outline-white"
-          }
-          ${className}
-        `}
-        style={{
-          transform: `translate(-50%, -50%) rotate(${item.rot}deg) scale(${item.scale})`,
-          transformOrigin: "center center",
-          touchAction: "none",
-        }}
-        onPointerDown={(e) => {
-          if (e.pointerType === "mouse" && e.button !== 0) return;
+      onPointerDown={(e) => {
+        const el = ref.current;
+        if (!el) return;
 
-          e.preventDefault();
-          onBringToFront(item.id);
+        e.preventDefault();
+        setPressed(true);
 
-          dragRef.current = {
-            pointerId: e.pointerId,
-            startX: e.clientX,
-            startY: e.clientY,
-            originX: posRef.current.x,
-            originY: posRef.current.y,
-          };
+        // 포인터 캡쳐: 손가락/마우스가 밖으로 나가도 계속 이벤트 받음
+        el.setPointerCapture(e.pointerId);
 
-          setDragging(true);
-          e.currentTarget.setPointerCapture(e.pointerId);
-        }}
-        onPointerMove={(e) => {
-          const drag = dragRef.current;
-          if (!drag || drag.pointerId !== e.pointerId) return;
+        start.current = { x: e.clientX, y: e.clientY };
+        base.current = { x: live.current.x, y: live.current.y };
 
-          e.preventDefault();
-          setLivePos(getNextPos(e.clientX, e.clientY));
-        }}
-        onPointerUp={(e) => {
-          const drag = dragRef.current;
-          if (!drag || drag.pointerId !== e.pointerId) return;
+        el.parentElement?.appendChild(el);
+      }}
+      onPointerMove={(e) => {
+        if (!start.current) return;
 
-          e.preventDefault();
+        e.preventDefault();
 
-          const next = getNextPos(e.clientX, e.clientY);
-          setLivePos(next);
+        const dx = e.clientX - start.current.x;
+        const dy = e.clientY - start.current.y;
 
-          dragRef.current = null;
-          setDragging(false);
-          onMoveEnd(item.id, next.x, next.y);
+        const x = base.current.x + dx;
+        const y = base.current.y + dy;
 
-          if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-            e.currentTarget.releasePointerCapture(e.pointerId);
-          }
-        }}
-        onPointerCancel={(e) => {
-          const drag = dragRef.current;
-          if (!drag || drag.pointerId !== e.pointerId) return;
+        live.current = { x, y };
+        applyTransform(x, y);
+      }}
+      onPointerUp={(e) => {
+        const el = ref.current;
+        if (!start.current || !el) return;
 
-          const rollback = { x: item.x, y: item.y };
-          posRef.current = rollback;
-          setPos(rollback);
+        e.preventDefault();
+        setPressed(false);
 
-          dragRef.current = null;
-          setDragging(false);
+        const dx = e.clientX - start.current.x;
+        const dy = e.clientY - start.current.y;
 
-          if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-            e.currentTarget.releasePointerCapture(e.pointerId);
-          }
-        }}
-        onLostPointerCapture={() => {
-          if (!dragRef.current) return;
+        start.current = null;
 
-          const next = posRef.current;
-          dragRef.current = null;
-          setDragging(false);
-          onMoveEnd(item.id, next.x, next.y);
-        }}
-      />
-    </div>
+        // 최종 반영은 기존대로 onDrag에서 부모 상태 업데이트
+        onDrag(item.id, dx, dy);
+      }}
+      onPointerCancel={() => {
+        start.current = null;
+        setPressed(false);
+      }}
+    />
   );
 }
 
 export default memo(DraggableImage);
+export type { DraggableItem };
