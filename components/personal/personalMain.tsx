@@ -54,7 +54,7 @@ function getWorkMeta(work: SelectedWork | null) {
   return {
     route: `: PERSONAL / ${work.category.toUpperCase()} / ${year}_${name}`,
     title: `${name}, ${year}`,
-    description: "",
+    description: work.description ?? "",
   };
 }
 
