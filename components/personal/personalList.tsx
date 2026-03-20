@@ -16,6 +16,7 @@ type FileItem = {
   fileName: string;
   slug: string;
   images: ManifestImage[];
+  description?: string;
 };
 
 function LazyMasonryImage({
