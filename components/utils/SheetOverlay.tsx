@@ -70,7 +70,7 @@ export default function SheetOverlay({
             }
           `}
         >
-          <div className="ml-[20px]">
+          <div className="ml-[20px] pr-[25px]">
             <div className="h-[5vh] flex items-center justify-between px-4 mt-[10px] ">
             <button onClick={onClose} className="px-2 cursor-pointer ">
               &lt; BACK
