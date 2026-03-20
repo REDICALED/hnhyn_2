@@ -184,6 +184,7 @@ export default function PersonalMasonry({
                     alt={fileName}
                     ready={ready}
                     isActive={isActive}
+                    description: "설명 테스트",
                   />
 
                   <div
