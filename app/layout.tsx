@@ -23,7 +23,7 @@ export default function RootLayout({
 </head>
 <body
 className="h-[100dvh] pb-[env(safe-area-inset-bottom)] leading-[1.2]"
-style={{ fontFamily: '"ABCSyntMono", "pretendard", monospace' }}>
+style={{ fontFamily: '"ABCSyntMono", "Pretendard", monospace' }}>
 <div>
 <VerticalLineLeft />
 <VerticalLineRight />
