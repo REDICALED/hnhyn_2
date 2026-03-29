@@ -2,8 +2,8 @@
 
 @font-face {
   font-family: ABCSyntMono;
-  src: url('https://cdnhnhyn.aggingkobe.com/ABCSyntMono-Regular.woff2?v=2') format('woff2'),
-       url('https://cdnhnhyn.aggingkobe.com/ABCSyntMono-Regular.woff?v=2') format('woff');
+  src: url('https://cdn.hanhyeon.kr/ABCSyntMono-Regular.woff2?v=2') format('woff2'),
+       url('https://cdn.hanhyeon.kr/ABCSyntMono-Regular.woff?v=2') format('woff');
 }
 
 .slide-top-lg {

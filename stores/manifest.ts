@@ -41,7 +41,7 @@ export const useManifest = create<ManifestState>((set, get) => ({
     set({ loading: true });
 
     try {
-      const res = await fetch("https://cdnhnhyn.aggingkobe.com/manifest.json", {
+      const res = await fetch("https://cdn.hanhyeon.kr/manifest.json", {
         cache: "force-cache",
       });
 
