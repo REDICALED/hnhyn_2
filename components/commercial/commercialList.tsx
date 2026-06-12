@@ -24,65 +24,40 @@ function LazyMasonryImage({
   alt,
   ready,
   isActive,
+  eager = false,
+  priority = false,
 }: {
   src: string;
   alt: string;
   ready: boolean;
   isActive: boolean;
+  eager?: boolean;
+  priority?: boolean;
 }) {
-  const wrapRef = useRef<HTMLDivElement | null>(null);
-  const [shouldLoad, setShouldLoad] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShouldLoad(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "400px 0px" }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <div
-      ref={wrapRef}
       className="w-full"
-      style={{ minHeight: "12rem", borderRadius: 1, overflow: "hidden" }}
+      style={{
+        minHeight: "12rem",
+        borderRadius: 1,
+        overflow: "hidden",
+        backgroundColor: "#efefef",
+      }}
     >
-      {shouldLoad ? (
-        <img
-          src={src}
-          alt={alt}
-          loading="lazy"
-          draggable={false}
-          onLoad={() => setLoaded(true)}
-          className={`
-            w-full h-auto block select-none cursor-pointer transition-opacity duration-100
-            ${ready ? "" : "invert grayscale-100"}
-            ${isActive ? "opacity-100" : ""}
-            ${loaded ? "opacity-100" : "opacity-0"}
-          `}
-          style={{ borderRadius: 1 }}
-        />
-      ) : (
-        <div
-          className={`w-full ${ready ? "" : "invert grayscale-100"}`}
-          style={{
-            minHeight: "12rem",
-            borderRadius: 1,
-            backgroundColor: "#efefef",
-          }}
-        />
-      )}
+      <img
+        src={src}
+        alt={alt}
+        loading={eager ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : "auto"}
+        decoding="async"
+        draggable={false}
+        className={`
+          w-full h-auto block select-none cursor-pointer
+          ${ready ? "" : "invert grayscale-100"}
+          ${isActive ? "opacity-100" : ""}
+        `}
+        style={{ borderRadius: 1 }}
+      />
     </div>
   );
 }
@@ -110,7 +85,7 @@ const fetchManifest = useManifest((s) => s.fetchManifest);
       return;
     }
 
-    const t = setTimeout(() => setReady(true), 700);
+    const t = setTimeout(() => setReady(true), 120);
     return () => clearTimeout(t);
   }, [portraitOpen]);
 
@@ -125,7 +100,7 @@ const fetchManifest = useManifest((s) => s.fetchManifest);
   const allFiles = useMemo<FileItem[]>(() => {
     if (!manifest) return [];
 
-    return (manifest[category] || [])
+    return [...(manifest[category] || [])]
       .reverse()
       .map((work) => {
         const titleImage = work.images.find((img) => img.type === "title");
@@ -169,8 +144,10 @@ const fetchManifest = useManifest((s) => s.fetchManifest);
           gutterBreakPoints={{ 0: "2px", 768: "4px", 1024: "6px" }}
         >
           <Masonry style={{ justifyContent: "center" }}>
-            {files.map(({ src, fileName, slug, images }) => {
+            {files.map(({ src, fileName, slug, images }, index) => {
               const isActive = activeSrc === src;
+              const eager = portraitOpen && index < 12;
+              const priority = portraitOpen && index < 12;
 
               return (
                 <div
@@ -183,6 +160,8 @@ const fetchManifest = useManifest((s) => s.fetchManifest);
                     alt={fileName}
                     ready={ready}
                     isActive={isActive}
+                    eager={eager}
+                    priority={priority}
                   />
 
 

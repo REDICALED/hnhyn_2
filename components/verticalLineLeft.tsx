@@ -1,5 +1,6 @@
 'use client';
 
+import Link from "next/link";
 
 import { useNowArea } from "@/stores/nowArea"
 
@@ -10,15 +11,18 @@ export default function VerticalLineLeft() {
   return (
     <div className="z-[50] bg-[white] border-x fixed left-0 top-0 h-full w-[25px]">
       <div className="h-[48vh] mt-[10px] flex flex-col items-center justify-between">
-        <div className="[writing-mode:vertical-rl] [text-orientation:mixed] rotate-180 whitespace-nowrap font-[400] text-[14px] leading-none">
+        <Link
+          href="/directory"
+          className="[writing-mode:vertical-rl] [text-orientation:mixed] rotate-180 whitespace-nowrap font-[400] text-[14px] leading-none"
+        >
           DIRECTORY
-        </div>
-        <div className="[writing-mode:vertical-rl] [text-orientation:mixed] rotate-180 whitespace-nowrap font-[400] text-[14px] leading-none">
+        </Link>
+        <Link
+          href="/info"
+          className="[writing-mode:vertical-rl] [text-orientation:mixed] rotate-180 whitespace-nowrap font-[400] text-[14px] leading-none"
+        >
           INFO
-        </div>
-        <div className="[writing-mode:vertical-rl] [text-orientation:mixed] rotate-180 whitespace-nowrap font-[400] text-[14px] leading-none">
-          DAILY
-        </div>
+        </Link>
       </div>
 
 

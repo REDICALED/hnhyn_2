@@ -61,9 +61,17 @@ function getWorkMeta(work: SelectedWork | null) {
 export default function PersonalMain({
   activeWork,
   setActiveWork,
+  activeCategory,
+  onOpenCategory,
+  onSelectWork,
+  onCloseWork,
 }: {
   activeWork: SelectedWork | null;
   setActiveWork: (work: SelectedWork | null) => void;
+  activeCategory: "main" | "extra" | null;
+  onOpenCategory: (category: "main" | "extra") => void;
+  onSelectWork: (work: SelectedWork) => void;
+  onCloseWork: () => void;
 }) {
   const { nowArea } = useNowArea();
   const { beforeArea } = useBeforeArea();
@@ -115,6 +123,7 @@ export default function PersonalMain({
 
   const openMain = (mode: "main" | "extra") => {
     setMainMode(mode);
+    onOpenCategory(mode);
 
     if (nowArea === "topArea") {
       setMainOpen(true);
@@ -123,6 +132,23 @@ export default function PersonalMain({
 
     openAfterEnterRef.current = true;
   };
+
+  useEffect(() => {
+    if (!activeCategory) {
+      setMainOpen(false);
+      setMainMode("");
+      return;
+    }
+
+    setMainMode(activeCategory);
+
+    if (nowArea === "topArea") {
+      setMainOpen(true);
+      return;
+    }
+
+    openAfterEnterRef.current = true;
+  }, [activeCategory, nowArea]);
 
   useEffect(() => {
     if (nowArea === "topArea" && openAfterEnterRef.current) {
@@ -185,14 +211,20 @@ export default function PersonalMain({
         <MainMasonry
           mainOpen={mainOpen}
           activeSrc={activeTitleSrc}
-          onSelect={(work) => setActiveWork(work)}
+          onSelect={(work) => {
+            setActiveWork(work);
+            onSelectWork(work);
+          }}
           category={mainMode === "extra" ? "extra" : "main"}
         />
       </div>
 
       <SheetOverlay
         open={activeWork !== null}
-        onClose={() => setActiveWork(null)}
+        onClose={() => {
+          setActiveWork(null);
+          onCloseWork();
+        }}
         route={route}
         title={title}
         description={description}

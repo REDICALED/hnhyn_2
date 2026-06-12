@@ -1,0 +1,319 @@
+'use client';
+
+import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+
+import { useManifest, type ManifestWork } from "@/stores/manifest";
+
+type DirectorySection = {
+  label: ":commercial" | ":personal";
+  groups: DirectoryGroup[];
+};
+
+type DirectoryGroup = {
+  label: string;
+  works: ManifestWork[];
+};
+
+type PreviewImage = {
+  url: string;
+  name: string;
+} | null;
+
+const DATE_LABEL = "2025.00.00";
+const DIRECTORY_GRID =
+  "grid grid-cols-[minmax(115px,0.9fr)_24px_minmax(150px,0.85fr)_24px_minmax(170px,1fr)_24px_minmax(170px,1.2fr)_24px_110px] gap-x-[18px] items-start";
+
+function imageName(key: string) {
+  return key.split("/").pop() || key;
+}
+
+function representativeImage(work: ManifestWork) {
+  return (
+    work.images.find((image) => image.type === "title")?.url ||
+    work.coverUrl ||
+    work.images[0]?.url ||
+    null
+  );
+}
+
+function DirectoryWork({
+  work,
+  active,
+  onToggle,
+  onPreview,
+}: {
+  work: ManifestWork;
+  active: boolean;
+  onToggle: () => void;
+  onPreview: (preview: PreviewImage) => void;
+}) {
+  const images = [...work.images].sort((a, b) => a.order - b.order);
+  const previewUrl = representativeImage(work);
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={onToggle}
+        className={`${DIRECTORY_GRID} w-full text-left cursor-pointer hover:underline`}
+      >
+        <span />
+        <span />
+        <span />
+        <span>/</span>
+        <span>{work.slug}</span>
+        <span>/</span>
+        <span />
+        <span>/</span>
+        <span>{DATE_LABEL}</span>
+      </button>
+
+      <div className={active ? "" : "hidden"}>
+        {images.map((image) => {
+          const name = imageName(image.key);
+
+          return (
+            <button
+              key={image.key}
+              type="button"
+              onMouseEnter={() => {
+                if (previewUrl) onPreview({ url: previewUrl, name });
+              }}
+              onMouseLeave={() => onPreview(null)}
+              className={`${DIRECTORY_GRID} w-full text-left cursor-pointer hover:underline`}
+            >
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+              <span>/</span>
+              <span>{name}</span>
+              <span>/</span>
+              <span>{DATE_LABEL}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function DirectoryGroupBlock({
+  section,
+  group,
+  active,
+  activeWork,
+  onToggleGroup,
+  onToggleWork,
+  onPreview,
+}: {
+  section: string;
+  group: DirectoryGroup;
+  active: boolean;
+  activeWork: string | null;
+  onToggleGroup: () => void;
+  onToggleWork: (group: string, slug: string) => void;
+  onPreview: (preview: PreviewImage) => void;
+}) {
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={onToggleGroup}
+        className={`${DIRECTORY_GRID} w-full text-left cursor-pointer hover:underline`}
+      >
+        <span>{section}</span>
+        <span>/</span>
+        <span>{group.label}</span>
+        <span>/</span>
+        <span />
+        <span>/</span>
+        <span />
+        <span>/</span>
+        <span>{DATE_LABEL}</span>
+      </button>
+
+      <div className={active ? "mt-[38px]" : "hidden"}>
+        {group.works.map((work) => (
+          <DirectoryWork
+            key={work.slug}
+            work={work}
+            active={activeWork === `${section}/${group.label}/${work.slug}`}
+            onToggle={() => onToggleWork(group.label, work.slug)}
+            onPreview={onPreview}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DirectoryHalf({
+  section,
+  activeGroup,
+  activeWork,
+  onToggleGroup,
+  onToggleWork,
+  onPreview,
+}: {
+  section: DirectorySection;
+  activeGroup: string | null;
+  activeWork: string | null;
+  onToggleGroup: (group: string) => void;
+  onToggleWork: (group: string, slug: string) => void;
+  onPreview: (preview: PreviewImage) => void;
+}) {
+  return (
+    <section className="overflow-hidden">
+      <div className="h-full overflow-y-auto px-[8vw] py-[10px] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="min-w-[960px]">
+          {section.groups.map((group) => (
+            <div
+              key={`${section.label}-${group.label}`}
+              className="mb-[44px]"
+            >
+              <DirectoryGroupBlock
+                section={section.label}
+                group={group}
+                active={activeGroup === `${section.label}/${group.label}`}
+                activeWork={activeWork}
+                onToggleGroup={() => onToggleGroup(group.label)}
+                onToggleWork={onToggleWork}
+                onPreview={onPreview}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PreviewStack({ preview }: { preview: NonNullable<PreviewImage> }) {
+  const layers = [
+    { x: -46, y: -32, rotate: -18, z: 1, opacity: 0.58 },
+    { x: 32, y: -26, rotate: 21, z: 2, opacity: 0.66 },
+    { x: -24, y: 20, rotate: 13, z: 3, opacity: 0.72 },
+    { x: 38, y: 26, rotate: -24, z: 4, opacity: 0.78 },
+    { x: 0, y: 0, rotate: 7, z: 5, opacity: 1 },
+  ];
+
+  return (
+    <div className="pointer-events-none fixed inset-0 z-[55] flex items-center justify-center">
+      <div className="relative h-[210px] w-[210px]">
+        {layers.map((layer) => (
+          <Image
+            key={`${preview.url}-${layer.z}`}
+            src={preview.url}
+            alt={preview.name}
+            width={210}
+            height={270}
+            className="absolute left-1/2 top-1/2 h-[170px] w-auto object-cover shadow-sm"
+            style={{
+              opacity: layer.opacity,
+              zIndex: layer.z,
+              transform: `translate(calc(-50% + ${layer.x}px), calc(-50% + ${layer.y}px)) rotate(${layer.rotate}deg)`,
+            }}
+            unoptimized
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function DirectoryPage() {
+  const manifest = useManifest((state) => state.manifest);
+  const fetchManifest = useManifest((state) => state.fetchManifest);
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
+  const [activeWork, setActiveWork] = useState<string | null>(null);
+  const [preview, setPreview] = useState<PreviewImage>(null);
+
+  useEffect(() => {
+    fetchManifest();
+  }, [fetchManifest]);
+
+  const sections = useMemo<DirectorySection[]>(() => {
+    return [
+      {
+        label: ":commercial",
+        groups: [
+          { label: "1portrait", works: manifest?.portrait ?? [] },
+          { label: "2non_portrait", works: manifest?.non_portrait ?? [] },
+        ],
+      },
+      {
+        label: ":personal",
+        groups: [
+          { label: "1main", works: manifest?.main ?? [] },
+          { label: "2extra", works: manifest?.extra ?? [] },
+        ],
+      },
+    ];
+  }, [manifest]);
+
+  const toggleGroup = (section: string, group: string) => {
+    const key = `${section}/${group}`;
+
+    setActiveGroup((current) => (current === key ? null : key));
+    setActiveWork(null);
+    setPreview(null);
+  };
+
+  const toggleWork = (section: string, group: string, slug: string) => {
+    const key = `${section}/${group}/${slug}`;
+
+    setActiveWork((current) => (current === key ? null : key));
+    setPreview(null);
+  };
+
+  return (
+    <main className="absolute inset-0 h-svh w-screen overflow-hidden bg-white text-[16px] font-[400]">
+      <div className="absolute left-[25px] right-[25px] top-0 bottom-0 grid grid-rows-[1fr_auto_1fr]">
+        <DirectoryHalf
+          section={sections[0]}
+          activeGroup={activeGroup}
+          activeWork={activeWork}
+          onToggleGroup={(group) => toggleGroup(sections[0].label, group)}
+          onToggleWork={(group, slug) => toggleWork(sections[0].label, group, slug)}
+          onPreview={setPreview}
+        />
+        <div className="h-px w-full bg-black" />
+        <DirectoryHalf
+          section={sections[1]}
+          activeGroup={activeGroup}
+          activeWork={activeWork}
+          onToggleGroup={(group) => toggleGroup(sections[1].label, group)}
+          onToggleWork={(group, slug) => toggleWork(sections[1].label, group, slug)}
+          onPreview={setPreview}
+        />
+      </div>
+
+      {preview && <PreviewStack preview={preview} />}
+
+      <div className="fixed bottom-[18px] left-[54px] z-[60] flex items-center gap-[16px]">
+        <span className="h-[10px] w-[10px] rounded-full bg-red-600" />
+        <span>En / kr</span>
+      </div>
+
+      <div className="fixed top-[16px] right-[54px] z-[60] flex items-center gap-[18px]">
+        <span className="h-[10px] w-[10px] rounded-full bg-red-600" />
+        <span>On / Off</span>
+      </div>
+
+      <Link href="/" className="fixed bottom-6 right-16 z-[60]">
+        <Image
+          src="/Logo_Main.svg"
+          alt="HANHYEON"
+          width={120}
+          height={120}
+          className="w-32"
+          draggable={false}
+        />
+      </Link>
+    </main>
+  );
+}

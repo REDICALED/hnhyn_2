@@ -63,9 +63,17 @@ function getWorkMeta(work: SelectedWork | null) {
 export default function CommercialMain({
   activeWork,
   setActiveWork,
+  activeCategory,
+  onOpenCategory,
+  onSelectWork,
+  onCloseWork,
 }: {
   activeWork: SelectedWork | null;
   setActiveWork: (work: SelectedWork | null) => void;
+  activeCategory: "portrait" | "non_portrait" | null;
+  onOpenCategory: (category: "portrait" | "non_portrait") => void;
+  onSelectWork: (work: SelectedWork) => void;
+  onCloseWork: () => void;
 }) {
   const { nowArea } = useNowArea();
   const { beforeArea } = useBeforeArea();
@@ -117,6 +125,7 @@ export default function CommercialMain({
 
   const openPortrait = (mode: "portrait" | "non_portrait") => {
     setPortraitMode(mode);
+    onOpenCategory(mode);
 
     if (nowArea === "bottomArea") {
       setPortraitOpen(true);
@@ -125,6 +134,23 @@ export default function CommercialMain({
 
     openAfterEnterRef.current = true;
   };
+
+  useEffect(() => {
+    if (!activeCategory) {
+      setPortraitOpen(false);
+      setPortraitMode("");
+      return;
+    }
+
+    setPortraitMode(activeCategory);
+
+    if (nowArea === "bottomArea") {
+      setPortraitOpen(true);
+      return;
+    }
+
+    openAfterEnterRef.current = true;
+  }, [activeCategory, nowArea]);
 
   useEffect(() => {
     if (nowArea === "bottomArea" && openAfterEnterRef.current) {
@@ -186,14 +212,20 @@ export default function CommercialMain({
         <PortraitMasonry
           portraitOpen={portraitOpen}
           activeSrc={activeTitleSrc}
-          onSelect={(work) => setActiveWork(work)}
+          onSelect={(work) => {
+            setActiveWork(work);
+            onSelectWork(work);
+          }}
           category={portraitMode === "non_portrait" ? "non_portrait" : "portrait"}
         />
       </div>
 
       <SheetOverlay
         open={activeWork !== null}
-        onClose={() => setActiveWork(null)}
+        onClose={() => {
+          setActiveWork(null);
+          onCloseWork();
+        }}
         route={route}
         title={title}
         description={description}

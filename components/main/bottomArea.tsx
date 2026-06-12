@@ -3,7 +3,7 @@
 import { useNowArea } from "@/stores/nowArea"
 import { useBeforeArea } from "@/stores/beforeArea";
 
-export default function bottomArea(  ) {
+export default function bottomArea({ onOpen }: { onOpen?: () => void }) {
   const { nowArea, setNowArea } = useNowArea();
   const { beforeArea, setBeforeArea } = useBeforeArea();
   
@@ -13,6 +13,7 @@ export default function bottomArea(  ) {
     onClick={() => {
           setBeforeArea(nowArea);
           setNowArea("bottomArea");
+          onOpen?.();
     }}
     className={`
     ${nowArea != 'middleArea' ? 'h-[31px] py-1 border-y -mt-[2px]' : 'h-[calc(45svh-1px)] max-md:border-0 border-t'}
