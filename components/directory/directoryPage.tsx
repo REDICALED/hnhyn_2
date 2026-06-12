@@ -17,9 +17,17 @@ type DirectoryGroup = {
 };
 
 type PreviewImage = {
+  id: string;
   url: string;
   name: string;
-} | null;
+};
+
+type StackedPreviewImage = PreviewImage & {
+  x: number;
+  y: number;
+  rotate: number;
+  z: number;
+};
 
 const DATE_LABEL = "2025.00.00";
 const DIRECTORY_GRID =
@@ -42,15 +50,15 @@ function DirectoryWork({
   work,
   active,
   onToggle,
-  onPreview,
+  onPreviewWork,
 }: {
   work: ManifestWork;
   active: boolean;
   onToggle: () => void;
-  onPreview: (preview: PreviewImage) => void;
+  onPreviewWork: (preview: PreviewImage) => void;
 }) {
   const images = [...work.images].sort((a, b) => a.order - b.order);
-  const previewUrl = representativeImage(work);
+  const representativeUrl = representativeImage(work);
 
   return (
     <div>
@@ -79,9 +87,12 @@ function DirectoryWork({
               key={image.key}
               type="button"
               onMouseEnter={() => {
-                if (previewUrl) onPreview({ url: previewUrl, name });
+                onPreviewWork({
+                  id: work.slug,
+                  url: representativeUrl || image.url,
+                  name: work.slug,
+                });
               }}
-              onMouseLeave={() => onPreview(null)}
               className={`${DIRECTORY_GRID} w-full text-left cursor-pointer hover:underline`}
             >
               <span />
@@ -108,7 +119,7 @@ function DirectoryGroupBlock({
   activeWork,
   onToggleGroup,
   onToggleWork,
-  onPreview,
+  onPreviewWork,
 }: {
   section: string;
   group: DirectoryGroup;
@@ -116,7 +127,7 @@ function DirectoryGroupBlock({
   activeWork: string | null;
   onToggleGroup: () => void;
   onToggleWork: (group: string, slug: string) => void;
-  onPreview: (preview: PreviewImage) => void;
+  onPreviewWork: (preview: PreviewImage) => void;
 }) {
   return (
     <div>
@@ -143,7 +154,7 @@ function DirectoryGroupBlock({
             work={work}
             active={activeWork === `${section}/${group.label}/${work.slug}`}
             onToggle={() => onToggleWork(group.label, work.slug)}
-            onPreview={onPreview}
+            onPreviewWork={onPreviewWork}
           />
         ))}
       </div>
@@ -157,14 +168,14 @@ function DirectoryHalf({
   activeWork,
   onToggleGroup,
   onToggleWork,
-  onPreview,
+  onPreviewWork,
 }: {
   section: DirectorySection;
   activeGroup: string | null;
   activeWork: string | null;
   onToggleGroup: (group: string) => void;
   onToggleWork: (group: string, slug: string) => void;
-  onPreview: (preview: PreviewImage) => void;
+  onPreviewWork: (preview: PreviewImage) => void;
 }) {
   return (
     <section className="overflow-hidden">
@@ -182,7 +193,7 @@ function DirectoryHalf({
                 activeWork={activeWork}
                 onToggleGroup={() => onToggleGroup(group.label)}
                 onToggleWork={onToggleWork}
-                onPreview={onPreview}
+                onPreviewWork={onPreviewWork}
               />
             </div>
           ))}
@@ -192,30 +203,29 @@ function DirectoryHalf({
   );
 }
 
-function PreviewStack({ preview }: { preview: NonNullable<PreviewImage> }) {
-  const layers = [
-    { x: -46, y: -32, rotate: -18, z: 1, opacity: 0.58 },
-    { x: 32, y: -26, rotate: 21, z: 2, opacity: 0.66 },
-    { x: -24, y: 20, rotate: 13, z: 3, opacity: 0.72 },
-    { x: 38, y: 26, rotate: -24, z: 4, opacity: 0.78 },
-    { x: 0, y: 0, rotate: 7, z: 5, opacity: 1 },
-  ];
+const PREVIEW_PLACEMENTS = [
+  { x: -46, y: -32, rotate: -18 },
+  { x: 32, y: -26, rotate: 21 },
+  { x: -24, y: 20, rotate: 13 },
+  { x: 38, y: 26, rotate: -24 },
+  { x: 0, y: 0, rotate: 7 },
+];
 
+function PreviewStack({ previews }: { previews: StackedPreviewImage[] }) {
   return (
     <div className="pointer-events-none fixed inset-0 z-[55] flex items-center justify-center">
       <div className="relative h-[210px] w-[210px]">
-        {layers.map((layer) => (
+        {previews.map((preview) => (
           <Image
-            key={`${preview.url}-${layer.z}`}
+            key={`${preview.id}-${preview.z}`}
             src={preview.url}
             alt={preview.name}
             width={210}
             height={270}
             className="absolute left-1/2 top-1/2 h-[170px] w-auto object-cover shadow-sm"
             style={{
-              opacity: layer.opacity,
-              zIndex: layer.z,
-              transform: `translate(calc(-50% + ${layer.x}px), calc(-50% + ${layer.y}px)) rotate(${layer.rotate}deg)`,
+              zIndex: preview.z,
+              transform: `translate(calc(-50% + ${preview.x}px), calc(-50% + ${preview.y}px)) rotate(${preview.rotate}deg)`,
             }}
             unoptimized
           />
@@ -230,7 +240,7 @@ export default function DirectoryPage() {
   const fetchManifest = useManifest((state) => state.fetchManifest);
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
   const [activeWork, setActiveWork] = useState<string | null>(null);
-  const [preview, setPreview] = useState<PreviewImage>(null);
+  const [previews, setPreviews] = useState<StackedPreviewImage[]>([]);
 
   useEffect(() => {
     fetchManifest();
@@ -260,14 +270,30 @@ export default function DirectoryPage() {
 
     setActiveGroup((current) => (current === key ? null : key));
     setActiveWork(null);
-    setPreview(null);
   };
 
   const toggleWork = (section: string, group: string, slug: string) => {
     const key = `${section}/${group}/${slug}`;
 
     setActiveWork((current) => (current === key ? null : key));
-    setPreview(null);
+  };
+
+  const stackPreview = (preview: PreviewImage) => {
+    setPreviews((current) => {
+      const withoutSameWork = current.filter((item) => item.id !== preview.id);
+      const z = Math.max(0, ...withoutSameWork.map((item) => item.z)) + 1;
+      const placement = PREVIEW_PLACEMENTS[(z - 1) % PREVIEW_PLACEMENTS.length];
+      const next = [
+        ...withoutSameWork,
+        {
+          ...preview,
+          ...placement,
+          z,
+        },
+      ];
+
+      return next.slice(-5);
+    });
   };
 
   return (
@@ -279,7 +305,7 @@ export default function DirectoryPage() {
           activeWork={activeWork}
           onToggleGroup={(group) => toggleGroup(sections[0].label, group)}
           onToggleWork={(group, slug) => toggleWork(sections[0].label, group, slug)}
-          onPreview={setPreview}
+          onPreviewWork={stackPreview}
         />
         <div className="h-px w-full bg-black" />
         <DirectoryHalf
@@ -288,11 +314,11 @@ export default function DirectoryPage() {
           activeWork={activeWork}
           onToggleGroup={(group) => toggleGroup(sections[1].label, group)}
           onToggleWork={(group, slug) => toggleWork(sections[1].label, group, slug)}
-          onPreview={setPreview}
+          onPreviewWork={stackPreview}
         />
       </div>
 
-      {preview && <PreviewStack preview={preview} />}
+      {previews.length > 0 && <PreviewStack previews={previews} />}
 
       <div className="fixed bottom-[18px] left-[54px] z-[60] flex items-center gap-[16px]">
         <span className="h-[10px] w-[10px] rounded-full bg-red-600" />
